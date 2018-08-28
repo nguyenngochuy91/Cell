@@ -23,11 +23,12 @@ class Cell(object):
         self.day        = day
         self.children   = children
         self.parent     = parent
+        
     """
     function : Giving arrays of volume and ods for the children, calculate how much media volumn to be added
               and how much volumn after in each dilution
     input    : ods(array of float), volumes(array of float, these volumes have to add up to the self.volume)
-    output   : N/A
+    output   : names
     """
     def setChildren(self,ods, volumes,dayObserve):
         if sum(volumes)!= self.volume:
@@ -35,13 +36,17 @@ class Cell(object):
         else:
             numberChildren = len(ods)
             childDay       = self.day+dayObserve
+            names          = []
             for i in range(numberChildren):
+                name  = self.name+"_"+str(i)
                 v     = volumes[i]
                 od    = float(ods[i])
                 newV  = self.od*v/od
                 # create new Cell object
-                child = Cell(name=self.name+"_"+str(i),od=od,volume=newV,day=childDay,parent=self)
+                child = Cell(name=name,od=od,volume=newV,day=childDay,parent=self)
                 self.children.append(child)
+                names.append(name)
+            return names
     """
     function : giving the cell object, saving all the info in a dictionary and dump into a json file
     input    : Cell object
@@ -99,16 +104,35 @@ class Cell(object):
             for child in self.children:
                 if child.name == nodeName:
                     return child
+    
+    """
+    function : giving the cell object, get all the names
+    input    : Cell object
+    output   : names (list)
+    """                        
+    def getNames(self):
+        names = []
+        def dfs(node):
+            if node:
+                names.append(node.name)
+                for child in node.children:
+                    dfs(child)
+        dfs(self)
+        return names
             
-                        
             
             
-            
-            
-            
-            
-            
-            
+#root = readIn("data.txt")            
+#            
+#child0 = root.children[0]
+#
+#child1 = root.children[1]
+#
+#child2 = root.children[2]
+#
+#child00 = child0.children[0]
+#
+#child01 = child0.children[1]            
             
             
             

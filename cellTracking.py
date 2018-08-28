@@ -35,9 +35,9 @@ def takeInput(message,typeChecking,valueChecking,typeErrorMess,ValueErrorMess):
             if valueChecking(choice):
                 return choice
             else:
-                print (typeErrorMess)
+                print (ValueErrorMess)
         else:
-            print (ValueErrorMess)
+            print (typeErrorMess)
             
 """
 function : function asking user for a Cell object info to create one
@@ -106,6 +106,9 @@ def start(choice,typeErrorMess,ValueErrorMess):
                            typeErrorMess,
                            "The file can not be found in the current directory!")
         root = readIn(infile)
+    # get all the names
+    names = root.getNames()
+    print ("Here are all the names we currently have {}".format(",".join(names)))
 
 if __name__ == "__main__":
     print ("*"*160)
