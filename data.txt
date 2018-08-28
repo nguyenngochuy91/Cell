@@ -1,0 +1,50 @@
+{
+    "children": [
+        {
+            "children": [
+                {
+                    "children": [], 
+                    "day": 7, 
+                    "name": "tb_0_0", 
+                    "od": 0.1, 
+                    "parent": "tb_0", 
+                    "volume": 15.0
+                }, 
+                {
+                    "children": [], 
+                    "day": 7, 
+                    "name": "tb_0_1", 
+                    "od": 0.4, 
+                    "parent": "tb_0", 
+                    "volume": 3.75
+                }
+            ], 
+            "day": 3, 
+            "name": "tb_0", 
+            "od": 0.3, 
+            "parent": "tb", 
+            "volume": 10.0
+        }, 
+        {
+            "children": [], 
+            "day": 3, 
+            "name": "tb_1", 
+            "od": 0.15, 
+            "parent": "tb", 
+            "volume": 10.0
+        }, 
+        {
+            "children": [], 
+            "day": 3, 
+            "name": "tb_2", 
+            "od": 0.15, 
+            "parent": "tb", 
+            "volume": 10.0
+        }
+    ], 
+    "day": 0, 
+    "name": "tb", 
+    "od": 0.6, 
+    "parent": null, 
+    "volume": 10
+}
