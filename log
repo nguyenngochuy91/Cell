@@ -1,0 +1,236 @@
+****************************************************************************************************************************************************************
+Do you want to start a scratch experiment (Y,N)):
+y
+Do you want to use today date 2018-08-29 (yyyy-mm-dd) ?
+y
+Please type in the name of this experiment:
+Nhi
+Please type in the OD:
+.3
+Please type in the volume:
+10
+Are you sure to create a root that has name as  Nhi, od as  0.3, volume as  10.0 and date as  2018-08-29? :
+y
+Here are all the culture that can be updated:  Nhi
+
+Do you want to update a culture (Y,N):
+y
+The culture that you can update are: Nhi
+Please type in the name of the culture to update:
+Nhi
+Do you want to use today date 2018-08-29 (yyyy-mm-dd) ?
+n
+Please enter a day:
+31
+Please enter a month:
+8
+Please enter a year:
+2018
+Do you want to use today date 2018-08-31 (yyyy-mm-dd) ?
+y
+Please type in the OD:
+.6
+Are you sure to update culture Nhi with od 0.6 and date 2018-08-31? :
+y
+Do you want to update a culture (Y,N):
+n
+Let's move on to diluting our cultures!!!
+
+Here are all the culture that can be diluted: Nhi
+
+Do you want to dilute a culture (Y,N):
+Nhi
+Please provide the correct input format!!!
+
+Do you want to dilute a culture (Y,N):
+y
+The culture that you can update are: Nhi
+Please type in the name of the culture to dilute:
+Nhi
+Do you want to use today date 2018-08-29 (yyyy-mm-dd) ?
+n
+Please enter a day:
+31
+Please enter a month:
+8
+Please enter a year:
+2018
+Do you want to use today date 2018-08-31 (yyyy-mm-dd) ?
+y
+Please type in the number of culture after diluting (>=1):
+3
+You have chosen to dilute Nhi into 3 cultures, please type in the following info as instructed 
+
+***CAUTION*** 
+
+The new ods can take any value between 0 and 1, the new volumes together has to add up to volume of Nhi
+
+Info for new culture number 0:
+
+Please type in the OD:
+.3
+Please type in the volume:
+5
+(5.0, 10.0)
+Info for new culture number 1:
+
+Please type in the OD:
+.15
+Please type in the volume:
+2.5
+(7.5, 10.0)
+Info for new culture number 2:
+
+Please type in the OD:
+.15
+Please type in the volume:
+2.5
+(10.0, 10.0)
+Are you sure to dilute cultureb  Nhi as follow  name: Nhi_0, od: 0.3, volume: 5.0 
+name: Nhi_1, od: 0.15, volume: 2.5 
+name: Nhi_2, od: 0.15, volume: 2.5 
+ with date as  2018-08-31? :
+y
+Do you want to dilute a culture (Y,N):
+n
+We are done with diluting!!!
+
+Are you done with everything (Y,N)?:
+n
+Do you want to update a culture (Y,N):
+y
+The culture that you can update are: Nhi_0,Nhi_1,Nhi_2
+Please type in the name of the culture to update:
+Nhi_0
+Do you want to use today date 2018-08-29 (yyyy-mm-dd) ?
+n
+Please enter a day:
+20
+Please enter a month:
+9
+Please enter a year:
+2018
+Do you want to use today date 2018-09-20 (yyyy-mm-dd) ?
+y
+Please type in the OD:
+.8
+Are you sure to update culture Nhi_0 with od 0.8 and date 2018-09-20? :
+y
+Do you want to update a culture (Y,N):
+y
+The culture that you can update are: Nhi_0,Nhi_1,Nhi_2
+Please type in the name of the culture to update:
+Nhi_2
+Do you want to use today date 2018-08-29 (yyyy-mm-dd) ?
+n
+Please enter a day:
+15
+Please enter a month:
+9
+Please enter a year:
+2018
+Do you want to use today date 2018-09-15 (yyyy-mm-dd) ?
+y
+Please type in the OD:
+.7
+Are you sure to update culture Nhi_2 with od 0.7 and date 2018-09-15? :
+y
+Do you want to update a culture (Y,N):
+n
+Let's move on to diluting our cultures!!!
+
+Here are all the culture that can be diluted: Nhi_0, Nhi_1, Nhi_2
+
+Do you want to dilute a culture (Y,N):
+y
+The culture that you can update are: Nhi_0,Nhi_1,Nhi_2
+Please type in the name of the culture to dilute:
+Nhi_0
+Do you want to use today date 2018-08-29 (yyyy-mm-dd) ?
+n
+Please enter a day:
+20
+Please enter a month:
+9
+Please enter a year:
+2018
+Do you want to use today date 2018-09-20 (yyyy-mm-dd) ?
+y
+Please type in the number of culture after diluting (>=1):
+2
+You have chosen to dilute Nhi_0 into 2 cultures, please type in the following info as instructed 
+
+***CAUTION*** 
+
+The new ods can take any value between 0 and 1, the new volumes together has to add up to volume of Nhi_0
+
+Info for new culture number 0:
+
+Please type in the OD:
+.4
+Please type in the volume:
+3
+(3.0, 10.0)
+Info for new culture number 1:
+
+Please type in the OD:
+.4
+Please type in the volume:
+7
+(10.0, 10.0)
+Are you sure to dilute cultureb  Nhi_0 as follow  name: Nhi_0_0, od: 0.4, volume: 3.0 
+name: Nhi_0_1, od: 0.4, volume: 7.0 
+ with date as  2018-09-20? :
+y
+Do you want to dilute a culture (Y,N):
+y
+The culture that you can update are: Nhi_1,Nhi_2,Nhi_0_0,Nhi_0_1
+Please type in the name of the culture to dilute:
+Nhi_2
+Do you want to use today date 2018-08-29 (yyyy-mm-dd) ?
+n
+Please enter a day:
+15
+Please enter a month:
+9
+Please enter a year:
+2018
+Do you want to use today date 2018-09-15 (yyyy-mm-dd) ?
+y
+Please type in the number of culture after diluting (>=1):
+2
+You have chosen to dilute Nhi_2 into 2 cultures, please type in the following info as instructed 
+
+***CAUTION*** 
+
+The new ods can take any value between 0 and 1, the new volumes together has to add up to volume of Nhi_2
+
+Info for new culture number 0:
+
+Please type in the OD:
+.3
+Please type in the volume:
+5
+(5.0, 10.0)
+Info for new culture number 1:
+
+Please type in the OD:
+.4
+Please type in the volume:
+5
+(10.0, 10.0)
+Are you sure to dilute cultureb  Nhi_2 as follow  name: Nhi_2_0, od: 0.3, volume: 5.0 
+name: Nhi_2_1, od: 0.4, volume: 5.0 
+ with date as  2018-09-15? :
+y
+Do you want to dilute a culture (Y,N):
+n
+We are done with diluting!!!
+
+Are you done with everything (Y,N)?:
+y
+Let's save our progress
+Please type in the textfile to write (.txt):
+data.txt
+File {} is already exists, do you want to replace it (Y,N)?:
+y

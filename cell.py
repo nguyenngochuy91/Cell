@@ -17,12 +17,12 @@
 import collections
 
 class Cell(object):
-    def __init__(self,name,od,volume=None,day = 0,parent= None,children= []):
+    def __init__(self,name,od,volume=None,day = 0,parent= None):
         self.name       = name # name of the culture
         self.od         = [od] # list of ods value, this will getting updated until dilution
         self.volume     = volume
         self.day        = [day]
-        self.children   = children
+        self.children   = []
         self.parent     = parent
  
     """
@@ -63,7 +63,7 @@ class Cell(object):
             if node:
                 d["name"]     = node.name
                 d["od"]       = node.od
-                d["day"]      = node.day
+                d["day"]      = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.day]
                 d["volume"]   = node.volume
                 if node.parent:
                     d["parent"]   = node.parent.name

@@ -19,7 +19,25 @@ import numpy as np
 from cell import Cell
 import json
 import os.path
-
+### some modify the screen stdout
+reset     = '\033[0m'
+underline = '\033[04m'
+bold      = '\033[01m'
+colors    = {"black":'\033[30m',
+            "red":'\033[31m',
+            "green":'\033[32m',
+            "orange":'\033[33m',
+            "blue":'\033[34m',
+            "purple":'\033[35m',
+            "cyan":'\033[36m',
+            "lightgrey":'\033[37m',
+            "darkgrey":'\033[90m',
+            "lightred":'\033[91m',
+            "lightgreen":'\033[92m',
+            "yellow":'\033[93m',
+            "lightblue":'\033[94m',
+            "pink":'\033[95m',
+            "lightcyan":'\033[96m'}
 
 ###############################################################################
 ## helper functions to take input, check error, create Cell object, read in json file
@@ -156,7 +174,8 @@ def createRoot(typeErrorMess,ValueErrorMess):
         volume = getVolume(typeErrorMess,ValueErrorMess)
 
         ## double check if this is what the user want to do
-        choice = getChoice("Are you sure to create a root that has name as {}, od as {}, volume as {} and date as {}? :\n".format(name,od,volume,today),
+        choice = getChoice("Are you sure to create a root that has name as {} {}{}, od as {} {}{}, volume as {} {}{} and date as {} {}{}? :\n".format(
+                bold,name,reset,bold,od,reset,bold,volume,reset,bold,today,reset),
                            typeErrorMess,ValueErrorMess)
 
         if choice in "yY":
@@ -182,9 +201,12 @@ def readIn():
     def dfs(d):
         if d:
             name     = d["name"]     
-            od       = d["od"]     
-            day      = d["day"]      
-            volume   = d["volume"]   
+            od       = float(d["od"])     
+            day      = []
+            for k in d["day"]:
+                k = [int(i) for i in k.split()]
+                day.append(datetime.date(k[0],k[1],k[2]))
+            volume   = float(d["volume"])   
             children = []
             node     = Cell(name=name,od=od,volume=volume,day=day,children=children)
             for child in d["children"]:
@@ -205,7 +227,7 @@ def writeOut(root,typeErrorMess,ValueErrorMess):
         outfile = takeInput("Please type in the textfile to write (.txt):\n",
                             lambda myType: True,lambda myVal: True,"","")
         if os.path.isfile(outfile):
-            choice = getChoice("File {} is already exists, do you want to replace it (Y,N)?:\n",
+            choice = getChoice("File {}{}{} is already exists, do you want to replace it (Y,N)?:\n".format(bold,outfile,reset),
                                typeErrorMess,ValueErrorMess)
             if choice:
                 break
@@ -232,7 +254,8 @@ def update(root,names,leaves,typeErrorMess,ValueErrorMess):
         name   = name = getName("update",typeErrorMess,ValueErrorMess,names,leaves)
         today  = getDate(typeErrorMess,ValueErrorMess)
         od     = getOd(typeErrorMess,ValueErrorMess)
-        choice = getChoice("Are you sure to update culture {} with od {} and date {}? :\n".format(name,od,today),
+        choice = getChoice("Are you sure to update culture {} {}{} with od {} {}{} and date {} {}{}? :\n".format(
+                bold,name,reset,bold,od,reset,bold,today,reset),
                            typeErrorMess,ValueErrorMess)
         if choice in "yY":
             break
@@ -284,7 +307,8 @@ def dilute(root,names,leaves,typeErrorMess,ValueErrorMess):
             result  = ""
             for i in range(numberDilution):
                 result+=culture.format(namesAdd[i],newOds[i],newVolumes[i])
-            choice = getChoice("Are you sure to dilute culture {} as follow {} with date as {}? :\n".format(name,result,today),
+            choice = getChoice("Are you sure to dilute cultureb {} {}{} as follow {} {}{} with date as {} {}{}? :\n".format(
+                    bold,name,reset,bold,result,reset,bold,today,reset),
                                typeErrorMess,ValueErrorMess)
             if choice in "Yy":
                 leaves.remove(name)
@@ -314,7 +338,7 @@ def start(choice,typeErrorMess,ValueErrorMess):
     # get all the leaf names
     leaves = root.getLeafNames()
     names  = root.getNames()
-    print ("Here are all the culture that can be updated: {}\n".format(", ".join(names)))
+    print ("Here are all the culture that can be updated: {} {}{}\n".format(bold,", ".join(names),reset))
     # updating until done
     while True:
         while True:

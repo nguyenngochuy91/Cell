@@ -1,50 +1,105 @@
 {
+    "name": "Nhi", 
+    "od": [
+        0.3, 
+        0.6
+    ], 
+    "day": [
+        "2018-8-29", 
+        "2018-8-31"
+    ], 
+    "volume": 10.0, 
+    "parent": null, 
     "children": [
         {
+            "name": "Nhi_0", 
+            "od": [
+                0.3, 
+                0.8
+            ], 
+            "day": [
+                "2018-8-31", 
+                "2018-9-20"
+            ], 
+            "volume": 10.0, 
+            "parent": "Nhi", 
             "children": [
                 {
-                    "children": [], 
-                    "day": 7, 
-                    "name": "tb_0_0", 
-                    "od": 0.1, 
-                    "parent": "tb_0", 
-                    "volume": 15.0
+                    "name": "Nhi_0_0", 
+                    "od": [
+                        0.4
+                    ], 
+                    "day": [
+                        "2018-9-20"
+                    ], 
+                    "volume": 6.000000000000001, 
+                    "parent": "Nhi_0", 
+                    "children": []
                 }, 
                 {
-                    "children": [], 
-                    "day": 7, 
-                    "name": "tb_0_1", 
-                    "od": 0.4, 
-                    "parent": "tb_0", 
-                    "volume": 3.75
+                    "name": "Nhi_0_1", 
+                    "od": [
+                        0.4
+                    ], 
+                    "day": [
+                        "2018-9-20"
+                    ], 
+                    "volume": 14.0, 
+                    "parent": "Nhi_0", 
+                    "children": []
                 }
+            ]
+        }, 
+        {
+            "name": "Nhi_1", 
+            "od": [
+                0.15
             ], 
-            "day": 3, 
-            "name": "tb_0", 
-            "od": 0.3, 
-            "parent": "tb", 
-            "volume": 10.0
+            "day": [
+                "2018-8-31"
+            ], 
+            "volume": 10.0, 
+            "parent": "Nhi", 
+            "children": []
         }, 
         {
-            "children": [], 
-            "day": 3, 
-            "name": "tb_1", 
-            "od": 0.15, 
-            "parent": "tb", 
-            "volume": 10.0
-        }, 
-        {
-            "children": [], 
-            "day": 3, 
-            "name": "tb_2", 
-            "od": 0.15, 
-            "parent": "tb", 
-            "volume": 10.0
+            "name": "Nhi_2", 
+            "od": [
+                0.15, 
+                0.7
+            ], 
+            "day": [
+                "2018-8-31", 
+                "2018-9-15"
+            ], 
+            "volume": 10.0, 
+            "parent": "Nhi", 
+            "children": [
+                {
+                    "name": "Nhi_2_0", 
+                    "od": [
+                        0.3
+                    ], 
+                    "day": [
+                        "2018-9-15"
+                    ], 
+                    "volume": 11.666666666666668, 
+                    "parent": "Nhi_2", 
+                    "children": []
+                }, 
+                {
+                    "name": "Nhi_2_1", 
+                    "od": [
+                        0.4
+                    ], 
+                    "day": [
+                        "2018-9-15"
+                    ], 
+                    "volume": 8.75, 
+                    "parent": "Nhi_2", 
+                    "children": []
+                }
+            ]
         }
-    ], 
-    "day": 0, 
-    "name": "tb", 
-    "od": 0.6, 
-    "parent": null, 
-    "volume": 10
+    ]
 }
