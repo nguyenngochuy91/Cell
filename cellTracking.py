@@ -23,25 +23,11 @@ import os.path
 reset     = '\033[0m'
 underline = '\033[04m'
 bold      = '\033[01m'
-colors    = {"black":'\033[30m',
-            "red":'\033[31m',
-            "green":'\033[32m',
-            "orange":'\033[33m',
-            "blue":'\033[34m',
-            "purple":'\033[35m',
-            "cyan":'\033[36m',
-            "lightgrey":'\033[37m',
-            "darkgrey":'\033[90m',
-            "lightred":'\033[91m',
-            "lightgreen":'\033[92m',
-            "yellow":'\033[93m',
-            "lightblue":'\033[94m',
-            "pink":'\033[95m',
-            "lightcyan":'\033[96m'}
 
 ###############################################################################
-## helper functions to take input, check error, create Cell object, read in json file
-## some specific functions to take in od, volume, name, and choice since reused a lot
+## helper functions to take input, check error, create Cell object, 
+## some specific functions to take in od, volume, name, and choice since reused 
+## a lot
 ###############################################################################
 ## check if a number is float:
 def isFloat(n):
@@ -133,7 +119,7 @@ output   : date
 def getDate(typeErrorMess,ValueErrorMess):
     today = datetime.date.today()
     while True:
-        choice = getChoice("Do you want to use today date {} (yyyy-mm-dd) ?\n".format(today),typeErrorMess,ValueErrorMess)
+        choice = getChoice("Do you want to use today date {}{}{} (yyyy-mm-dd) ?\n".format(bold,today,reset),typeErrorMess,ValueErrorMess)
         if choice in "Yy":
             break
         day   = int(takeInput("Please enter a day:\n",
@@ -184,6 +170,9 @@ def createRoot(typeErrorMess,ValueErrorMess):
     
     return root
 
+###############################################################################
+## helper functions to read in json, write out json 
+###############################################################################
 """
 function : function that reads in a json text file, and parse info into a Cell object
 input    : N/A
@@ -201,19 +190,26 @@ def readIn():
     def dfs(d):
         if d:
             name     = d["name"]     
-            od       = float(d["od"])     
+            od       = d["od"]   
             day      = []
             for k in d["day"]:
-                k = [int(i) for i in k.split()]
+
+                k = [int(i) for i in k.split("-")]
                 day.append(datetime.date(k[0],k[1],k[2]))
-            volume   = float(d["volume"])   
+
+            volume   = d["volume"] 
+            add      = d["add"]
             children = []
-            node     = Cell(name=name,od=od,volume=volume,day=day,children=children)
+            node     = Cell(name=name,od=od,volume=volume)
+            node.day = day
+            node.od  = od
+            node.add = add
             for child in d["children"]:
                 # create the childNode
                 childNode        = dfs(child)
                 childNode.parent = node
                 children.append(childNode)
+            node.children = children
             return node
     return dfs(dictionary)
 
@@ -238,9 +234,47 @@ def writeOut(root,typeErrorMess,ValueErrorMess):
     with open(outfile,"w") as data_file:
         json.dump(dictionary, data_file,indent=4)  
 
-
+###############################################################################
+## helper visualize using networkx
+###############################################################################
+"""
+function : Given root, draw a plot, x-axis indicate time line, y axis is just to space our graph
+           Our main plot is a graph, with the root is the starting point, directed edge from
+           1 culture to other to show diluting process. 
+input    : root (Cell)
+output   : DG
+"""   
+def visualization(root):
+    DG = nx.DiGraph()
+    def dfs(node):
+        if node:
+            d = {}
+            d["day"]      = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.day]
+            if node.parent:
+                d["parent"]   = node.parent.name
+            else:
+                d["parent"]   = None
+            # add node
+            DG.add_node(node.name,name = node.name,od = node.od,
+                        day=["{}-{}-{}".format(k.year,k.month,k.day) for k in node.day],
+                        parent = node.parent,children= node.children,volume = node.volume,
+                        add = node.add)
+            # add edge
+            if node.parent:
+                parentName = node.parent.name
+                nodeName   = node.name
+                add        = node.add
+                volume     = node.volume
+                DG.add_edge(parentName,nodeName,volume= volume,add = add)
+            for child in node.children:
+                dfs(child)
+                
+    dfs(root)  
+    nx.draw(DG)
+    plt.show()
+    return DG
 ####################################################################################        
-# Main function and helpers functions
+# Main function to update, dilute and starts
 #################################################################################### 
 """
 function : Ask the user which solution to update, and update the od and date
@@ -250,7 +284,7 @@ output   : N/A
 def update(root,names,leaves,typeErrorMess,ValueErrorMess):
     # check if the name in names
     while True:
-        print ("The culture that you can update are: {}".format(",".join(leaves)))
+        print ("The culture that you can update are:{} {}{}".format(bold,",".join(leaves),reset))
         name   = name = getName("update",typeErrorMess,ValueErrorMess,names,leaves)
         today  = getDate(typeErrorMess,ValueErrorMess)
         od     = getOd(typeErrorMess,ValueErrorMess)
@@ -273,7 +307,7 @@ output   : N/A
 def dilute(root,names,leaves,typeErrorMess,ValueErrorMess):
         # check if the name in names
     while True:
-        print ("The culture that you can update are: {}".format(",".join(leaves)))
+        print ("The culture that you can dilute are: {}{}{}".format(bold,",".join(leaves),reset))
         name  = getName("dilute",typeErrorMess,ValueErrorMess,names,leaves)
         today = getDate(typeErrorMess,ValueErrorMess)
         numberDilution = int(takeInput("Please type in the number of culture after diluting (>=1):\n",
@@ -300,14 +334,14 @@ def dilute(root,names,leaves,typeErrorMess,ValueErrorMess):
             newVolumes.append(v)
             newOds.append(od)
             namesAdd.append(child_name)
-            print ( sum(newVolumes),volume)
+#            print ( sum(newVolumes),volume)
         if sum(newVolumes) ==  volume: 
             ## double check if this is what the user want to do
             culture = "name: {}, od: {}, volume: {} \n"
             result  = ""
             for i in range(numberDilution):
                 result+=culture.format(namesAdd[i],newOds[i],newVolumes[i])
-            choice = getChoice("Are you sure to dilute cultureb {} {}{} as follow {} {}{} with date as {} {}{}? :\n".format(
+            choice = getChoice("Are you sure to dilute culture {} {}{} as follow {} {}{} with date as {} {}{}? :\n".format(
                     bold,name,reset,bold,result,reset,bold,today,reset),
                                typeErrorMess,ValueErrorMess)
             if choice in "Yy":
@@ -363,6 +397,9 @@ def start(choice,typeErrorMess,ValueErrorMess):
             break
     # write the item into a file using json
     writeOut(root,typeErrorMess,ValueErrorMess)
+    # visualize the process
+    DG = visualization(root)
+    
 ###############################################################################
 ## driver program
 ###############################################################################

@@ -9,6 +9,7 @@
         "2018-8-31"
     ], 
     "volume": 10.0, 
+    "add": 0, 
     "parent": null, 
     "children": [
         {
@@ -22,6 +23,7 @@
                 "2018-9-20"
             ], 
             "volume": 10.0, 
+            "add": 5.0, 
             "parent": "Nhi", 
             "children": [
                 {
@@ -32,7 +34,8 @@
                     "day": [
                         "2018-9-20"
                     ], 
-                    "volume": 6.000000000000001, 
+                    "volume": 6.0, 
+                    "add": 3.0, 
                     "parent": "Nhi_0", 
                     "children": []
                 }, 
@@ -45,6 +48,7 @@
                         "2018-9-20"
                     ], 
                     "volume": 14.0, 
+                    "add": 7.0, 
                     "parent": "Nhi_0", 
                     "children": []
                 }
@@ -59,6 +63,7 @@
                 "2018-8-31"
             ], 
             "volume": 10.0, 
+            "add": 7.5, 
             "parent": "Nhi", 
             "children": []
         }, 
@@ -73,6 +78,7 @@
                 "2018-9-15"
             ], 
             "volume": 10.0, 
+            "add": 7.5, 
             "parent": "Nhi", 
             "children": [
                 {
@@ -83,7 +89,8 @@
                     "day": [
                         "2018-9-15"
                     ], 
-                    "volume": 11.666666666666668, 
+                    "volume": 11.67, 
+                    "add": 6.67, 
                     "parent": "Nhi_2", 
                     "children": []
                 }, 
@@ -96,6 +103,7 @@
                         "2018-9-15"
                     ], 
                     "volume": 8.75, 
+                    "add": 3.75, 
                     "parent": "Nhi_2", 
                     "children": []
                 }

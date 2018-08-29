@@ -24,6 +24,7 @@ class Cell(object):
         self.day        = [day]
         self.children   = []
         self.parent     = parent
+        self.add        = 0
  
     """
     function : giving the cell / culture, and the new od, and the day since last update, we update our Cell object
@@ -46,9 +47,10 @@ class Cell(object):
             name  = self.name+"_"+str(i)
             v     = volumes[i]
             od    = float(ods[i])
-            newV  = self.od[-1]*v/od
+            newV  = round(self.od[-1]*v/od,2)
             # create new Cell object
-            child = Cell(name=name,od=od,volume=newV,day=dayObserve,parent=self)
+            child     = Cell(name=name,od=od,volume=newV,day=dayObserve,parent=self)
+            child.add = newV-v
             self.children.append(child)
             names.append(name)
         return names
@@ -65,6 +67,7 @@ class Cell(object):
                 d["od"]       = node.od
                 d["day"]      = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.day]
                 d["volume"]   = node.volume
+                d["add"]      = node.add
                 if node.parent:
                     d["parent"]   = node.parent.name
                 else:
