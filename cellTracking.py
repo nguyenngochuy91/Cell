@@ -45,18 +45,18 @@ input    : NtypeErrorMess (string),ValueErrorMessA (string)
 output   : Cell object
 """    
 def createRoot(typeErrorMess,ValueErrorMess):
-    name   = takeInput("Please type in the name of this experiment:", 
+    name   = takeInput("Please type in the name of this experiment:\n", 
                        lambda myType: True, lambda myVal: True,
                        typeErrorMess,ValueErrorMess)
     
-    volume = float(takeInput("Please type in the volume:", 
+    volume = float(takeInput("Please type in the volume:\n", 
                        lambda myType: True if myType.isdigit() else False, 
-                       lambda myVal: True if float(myType)>0 and float(myType)<1000 else False,
+                       lambda myVal: True if float(myVal)>0 and float(myVal)<1000 else False,
                        typeErrorMess,ValueErrorMess))
 
-    od     = float(takeInput("Please type in the OD:", 
+    od     = float(takeInput("Please type in the OD:\n", 
                        lambda myType: True if myType.isdigit() else False, 
-                       lambda myVal: True if float(myType)>0 and float(myType)<1 else False,
+                       lambda myVal: True if float(myVal)>0 and float(myVal)<1 else False,
                        typeErrorMess,ValueErrorMess))
     
     # create a Cell object
@@ -87,8 +87,30 @@ def readIn(infile):
                 children.append(childNode)
             return node
     return dfs(dictionary)
-            
 
+####################################################################################        
+# Main function and helpers functions
+#################################################################################### 
+"""
+function : Ask the user which solution to dilution, and dilution into how many solutions, with what od
+input    : newVolumes(float), newOds(float)
+output   : N/A
+"""   
+def dilute(names,typeErrorMess,ValueErrorMess):
+    # check if the name in names
+    name = takeInput("Please type in the name of the culture to dilute:\n",
+                     lambda myType: True, 
+                     lambda myVal: True if myVal in names else False,
+                     "",
+                     "Culture name is not found, makes sure it is in this list {}".format(",".join(names)))
+    
+    numberDilution = int(takeInput("Please type in the number of culture after diluting (>=1):\n",
+                               lambda myType: True if myType.isdigit() else False,
+                               lambda myVal: True if myVal>0 else False,
+                               typeErrorMess,
+                               ValueErrorMess))
+    newVolumes = []
+    newOds     = []  
 """
 function : main function, takes in the user choice of whether start new experiment, or read in from file
 input    : choice
@@ -97,23 +119,24 @@ output   :
 def start(choice,typeErrorMess,ValueErrorMess):
     # if choice is Y or y, then create a Cell (or experiment object)
     if choice in "Yy":
-        root = createRoot(typeErrorMess,ValueErrorMess)
+        current = createRoot(typeErrorMess,ValueErrorMess)
     # else, ask the user for which file to read in
     else:
-        infile = takeInput("Please type in the textfile to read:",
+        infile = takeInput("Please type in the textfile to read:\n",
                            lambda myType: True,
                            lambda myVal: True if os.path.isfile(myVal) else False,
                            typeErrorMess,
-                           "The file can not be found in the current directory!")
-        root = readIn(infile)
+                           "The file can not be found in the current directory!\n")
+        current = readIn(infile)
     # get all the names
     names = root.getNames()
-    print ("Here are all the names we currently have {}".format(",".join(names)))
+    print ("Here are all the names we currently have: {}\n".format(", ".join(names)))
+    
 
 if __name__ == "__main__":
     print ("*"*160)
-    typeErrorMess  = "Please provide the correct input format!!!"
-    ValueErrorMess = "Please provide the correct input value (within range)!!!"
+    typeErrorMess  = "Please provide the correct input format!!!\n"
+    ValueErrorMess = "Please provide the correct input value (within range)!!!\n"
     # check whether user want to start from scratch
     choice = takeInput("Do you want to start a scratch experiment (Y,N)):",
                        lambda myType: True if myType in "YyNn" else False,
