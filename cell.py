@@ -17,10 +17,10 @@
 
 class Cell(object):
     def __init__(self,name,od,volume=None,day = 0,parent= None,children= []):
-        self.name       = name
-        self.od         = od
+        self.name       = name # name of the culture
+        self.od         = [od] # list of ods value, this will getting updated until dilution
         self.volume     = volume
-        self.day        = day
+        self.day        = [day]
         self.children   = children
         self.parent     = parent
         
@@ -30,23 +30,20 @@ class Cell(object):
     input    : ods(array of float), volumes(array of float, these volumes have to add up to the self.volume)
     output   : names
     """
-    def setChildren(self,ods, volumes,dayObserve):
-        if sum(volumes)!= self.volume:
-            print ("Attention folks, sum of the volumes is not equal to our old volume!!!")
-        else:
-            numberChildren = len(ods)
-            childDay       = self.day+dayObserve
-            names          = []
-            for i in range(numberChildren):
-                name  = self.name+"_"+str(i)
-                v     = volumes[i]
-                od    = float(ods[i])
-                newV  = self.od*v/od
-                # create new Cell object
-                child = Cell(name=name,od=od,volume=newV,day=childDay,parent=self)
-                self.children.append(child)
-                names.append(name)
-            return names
+    def setChildren(self,ods, volumes,dayObserve):     
+        numberChildren = len(ods)
+        childDay       = self.day+dayObserve
+        names          = []
+        for i in range(numberChildren):
+            name  = self.name+"_"+str(i)
+            v     = volumes[i]
+            od    = float(ods[i])
+            newV  = self.od[-1]*v/od
+            # create new Cell object
+            child = Cell(name=name,od=od,volume=newV,day=childDay,parent=self)
+            self.children.append(child)
+            names.append(name)
+        return names
     """
     function : giving the cell object, saving all the info in a dictionary and dump into a json file
     input    : Cell object
@@ -104,6 +101,33 @@ class Cell(object):
             for child in self.children:
                 if child.name == nodeName:
                     return child
+    """
+    function : giving the root, and a node name, return the node with the name
+    input    : Cell object
+    output   : node
+    """
+    def getNodeFromRoot(self,nodeName):
+        target_name  = nodeName.split("_")
+        current_node = self
+        for i in target_name[1:]:
+            current_node = current_node.children[int(i)]
+        return current_node
+    
+    """
+    function : giving the root, return all the leaf names
+    input    : Cell object
+    output   : names(list)
+    """
+    def getLeafNames(self):
+        names = []
+        def dfs(node):
+            if node:
+                if not node.children:
+                    names.append(node.name)
+                for child in node.children:
+                    dfs(child)
+        dfs(self)
+        return names
     
     """
     function : giving the cell object, get all the names
@@ -122,17 +146,17 @@ class Cell(object):
             
             
             
-#root = readIn("data.txt")            
-#            
-#child0 = root.children[0]
-#
-#child1 = root.children[1]
-#
-#child2 = root.children[2]
-#
-#child00 = child0.children[0]
-#
-#child01 = child0.children[1]            
+root = readIn("data.txt")            
+            
+child0 = root.children[0]
+
+child1 = root.children[1]
+
+child2 = root.children[2]
+
+child00 = child0.children[0]
+
+child01 = child0.children[1]            
             
             
             
