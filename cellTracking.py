@@ -109,6 +109,17 @@ def dilute(root,names,leaves,typeErrorMess,ValueErrorMess):
                                lambda myVal: True if myVal>0 else False,
                                typeErrorMess,
                                ValueErrorMess))
+    dayObserve     = int(takeInput("Please type in the number of days since your {} last update(>=1):\n",
+                               lambda myType: True if myType.isdigit() else False,
+                               lambda myVal: True if myVal>0 else False,
+                               typeErrorMess,
+                               ValueErrorMess))
+    
+    od             = int(takeInput("Please type in the number of days since your {} last update(>=1):\n",
+                               lambda myType: True if myType.isdigit() else False,
+                               lambda myVal: True if myVal>0 else False,
+                               typeErrorMess,
+                               ValueErrorMess))
     print ("You have chosen to dilute {} into {} cultures, please type in the following info as instructed \n".format(name,numberDilution))
     print ("***CAUTION*** \n")
     print ("The new ods can take any value between 0 and 1, the new volumes together has to add up to volume of {}\n".format(name))
@@ -145,7 +156,7 @@ def dilute(root,names,leaves,typeErrorMess,ValueErrorMess):
             print ("Attention folks, sum of the volumes is not equal to our old volume, you will be need to retype the infos!!!\n")
     
     # set the new Children for the target node
-    targetNode.setChildren()
+    targetNode.setChildren(ods, volumes)
     
 """
 function : main function, takes in the user choice of whether start new experiment, or read in from file
