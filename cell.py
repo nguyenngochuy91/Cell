@@ -13,7 +13,9 @@
 # keep update and write.
 # The way we add link to children is a bit unconventional, since we want to calculate
 # the volume of the children, the getVolumeChildren will calculate how much media
-# will be added
+# will be added\
+import collections
+
 class Cell(object):
     def __init__(self,name,od,volume=None,day = 0,parent= None,children= []):
         self.name       = name # name of the culture
@@ -39,7 +41,6 @@ class Cell(object):
     """
     def setChildren(self,ods, volumes,dayObserve):     
         numberChildren = len(ods)
-        childDay       = self.day+dayObserve
         names          = []
         for i in range(numberChildren):
             name  = self.name+"_"+str(i)
@@ -47,7 +48,7 @@ class Cell(object):
             od    = float(ods[i])
             newV  = self.od[-1]*v/od
             # create new Cell object
-            child = Cell(name=name,od=od,volume=newV,day=childDay,parent=self)
+            child = Cell(name=name,od=od,volume=newV,day=dayObserve,parent=self)
             self.children.append(child)
             names.append(name)
         return names
@@ -57,20 +58,20 @@ class Cell(object):
     output   : dictionary
     """    
     def toDictionary(self):
-        dictionary = {}
+        dictionary = collections.OrderedDict()
         def dfs(node,d):
             if node:
                 d["name"]     = node.name
                 d["od"]       = node.od
                 d["day"]      = node.day
                 d["volume"]   = node.volume
-                d["children"] = []
                 if node.parent:
                     d["parent"]   = node.parent.name
                 else:
                     d["parent"]   = None
+                d["children"] = []
                 for child in node.children:
-                    childD = {}
+                    childD = collections.OrderedDict()
                     dfs(child,childD)
                     d["children"].append(childD)
         dfs(self,dictionary)
@@ -152,18 +153,6 @@ class Cell(object):
         return names
             
             
-            
-root = readIn("data.txt")            
-            
-child0 = root.children[0]
 
-child1 = root.children[1]
-
-child2 = root.children[2]
-
-child00 = child0.children[0]
-
-child01 = child0.children[1]            
-            
             
             
