@@ -14,7 +14,6 @@
 # The way we add link to children is a bit unconventional, since we want to calculate
 # the volume of the children, the getVolumeChildren will calculate how much media
 # will be added
-
 class Cell(object):
     def __init__(self,name,od,volume=None,day = 0,parent= None,children= []):
         self.name       = name # name of the culture
@@ -23,7 +22,15 @@ class Cell(object):
         self.day        = [day]
         self.children   = children
         self.parent     = parent
-        
+ 
+    """
+    function : giving the cell / culture, and the new od, and the day since last update, we update our Cell object
+    input    : od, day
+    output   : N/A
+    """
+    def update(self,od,day)   :
+        self.od.append(od)
+        self.day.append(day)
     """
     function : Giving arrays of volume and ods for the children, calculate how much media volumn to be added
               and how much volumn after in each dilution

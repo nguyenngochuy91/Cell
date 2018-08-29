@@ -12,6 +12,9 @@
                     sudo pip install networkx
                     sudo pip install matplotlib
 '''
+from datetime import date
+from datetime import time
+
 import networkx as nx
 import matplotlib.pyplot as plt 
 import numpy as np
@@ -109,17 +112,6 @@ def dilute(root,names,leaves,typeErrorMess,ValueErrorMess):
                                lambda myVal: True if myVal>0 else False,
                                typeErrorMess,
                                ValueErrorMess))
-    dayObserve     = int(takeInput("Please type in the number of days since your {} last update(>=1):\n",
-                               lambda myType: True if myType.isdigit() else False,
-                               lambda myVal: True if myVal>0 else False,
-                               typeErrorMess,
-                               ValueErrorMess))
-    
-    od             = int(takeInput("Please type in the number of days since your {} last update(>=1):\n",
-                               lambda myType: True if myType.isdigit() else False,
-                               lambda myVal: True if myVal>0 else False,
-                               typeErrorMess,
-                               ValueErrorMess))
     print ("You have chosen to dilute {} into {} cultures, please type in the following info as instructed \n".format(name,numberDilution))
     print ("***CAUTION*** \n")
     print ("The new ods can take any value between 0 and 1, the new volumes together has to add up to volume of {}\n".format(name))
@@ -180,13 +172,14 @@ def start(choice,typeErrorMess,ValueErrorMess):
     names  = root.getNames()
     print ("Here are all the culture that can be diluted: {}\n".format(", ".join(leaves)))
     # keep on diluting until done
-    while True:
+    
         
 if __name__ == "__main__":
     print ("*"*160)
     typeErrorMess  = "Please provide the correct input format!!!\n"
     ValueErrorMess = "Please provide the correct input value (within range)!!!\n"
     # check whether user want to start from scratch
+    today   = date.today()
     choice = takeInput("Do you want to start a scratch experiment (Y,N)):",
                        lambda myType: True if myType in "YyNn" else False,
                        lambda myVal: True,
