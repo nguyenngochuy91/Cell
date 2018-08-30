@@ -182,8 +182,8 @@ def readIn():
     infile = takeInput("Please type in the textfile to read:\n",
                        lambda myType: True,
                        lambda myVal: True if os.path.isfile(myVal) else False,
-                       typeErrorMess,
-                        "The file can not be found in the current directory!\n")
+                       "",
+                       "The file can not be found in the current directory!\n")
     with open(infile) as data_file:
         dictionary = json.load(data_file)
     data_file.close()
@@ -238,6 +238,26 @@ def writeOut(root,typeErrorMess,ValueErrorMess):
 ## helper visualize using networkx
 ###############################################################################
 """
+function : Given a digraph, draw accordingly to options
+input    : DG
+output   : N/A
+"""   
+def specificDraw(G):
+    # generate position for our nodes
+    pos = nx.spring_layout(G)
+    options = {
+    'node_color': 'blue',
+    'node_size': 2000,
+    'width': 2,
+    'arrowstyle': '-|>',
+    'arrowsize': 12,
+    }
+    nx.draw_networkx(G, pos,arrows=True, **options)
+#    nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size = 2000)
+#    nx.draw_networkx_edge_labels(G,pos,edge_labels=edge_labels)
+#    nx.draw_networkx_labels(G, pos)
+    plt.show()
+"""
 function : Given root, draw a plot, x-axis indicate time line, y axis is just to space our graph
            Our main plot is a graph, with the root is the starting point, directed edge from
            1 culture to other to show diluting process. 
@@ -245,20 +265,14 @@ input    : root (Cell)
 output   : DG
 """   
 def visualization(root):
+    ## create a digraph
     DG = nx.DiGraph()
     def dfs(node):
         if node:
-            d = {}
-            d["day"]      = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.day]
-            if node.parent:
-                d["parent"]   = node.parent.name
-            else:
-                d["parent"]   = None
-            # add node
-            DG.add_node(node.name,name = node.name,od = node.od,
-                        day=["{}-{}-{}".format(k.year,k.month,k.day) for k in node.day],
-                        parent = node.parent,children= node.children,volume = node.volume,
-                        add = node.add)
+            days    = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.day]
+            ods     = node.od
+            # add node 
+            
             # add edge
             if node.parent:
                 parentName = node.parent.name
@@ -270,8 +284,9 @@ def visualization(root):
                 dfs(child)
                 
     dfs(root)  
-    nx.draw(DG)
-    plt.show()
+    ## drawing
+    specificDraw(DG)
+    
     return DG
 ####################################################################################        
 # Main function to update, dilute and starts
@@ -335,12 +350,14 @@ def dilute(root,names,leaves,typeErrorMess,ValueErrorMess):
             newOds.append(od)
             namesAdd.append(child_name)
 #            print ( sum(newVolumes),volume)
-        if sum(newVolumes) ==  volume: 
+        if sum(newVolumes) <=  volume: 
             ## double check if this is what the user want to do
             culture = "name: {}, od: {}, volume: {} \n"
             result  = ""
             for i in range(numberDilution):
                 result+=culture.format(namesAdd[i],newOds[i],newVolumes[i])
+            if sum(newVolumes)<volume:
+                print ("Be careful, it looks like the newVolumes is less than the current volume!!!\n")
             choice = getChoice("Are you sure to dilute culture {} {}{} as follow {} {}{} with date as {} {}{}? :\n".format(
                     bold,name,reset,bold,result,reset,bold,today,reset),
                                typeErrorMess,ValueErrorMess)
