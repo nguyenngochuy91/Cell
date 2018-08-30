@@ -238,56 +238,158 @@ def writeOut(root,typeErrorMess,ValueErrorMess):
 ## helper visualize using networkx
 ###############################################################################
 """
-function : Given a digraph, draw accordingly to options
-input    : DG
+function : Quick function to add a day and unique culture name to a dictionary. 
+input    : dictionary,day,name
 output   : N/A
 """   
-def specificDraw(G):
+def addDay(dictionary,day,name):
+    if day in dictionary:
+        dictionary[day].append(name)
+    else:
+        dictionary[day] = [name]
+        
+"""
+function : Given a digraph, and dictionary, assign coordinate for the pos
+input    : days_dictionary,start,ylimit
+output   : ps
+"""  
+def assignPos(days_dictionary,start,ylimit):
+    # assume the first day is the smallest day for the root node
+
+    dateList = sorted(days_dictionary)
+    print ("dateList",dateList)
+    difference = []
+    for i in range(len(dateList)-1):
+        difference.append((dateList[i+1]-dateList[i]).days)
+    print ("difference",difference)
+    start = start
+    root  = days_dictionary[dateList[0]][0]
+    ylimit= float(ylimit)
+    pos = {root:(ylimit/2,start)}
+    for i in range(1,len(dateList)):
+        names         = days_dictionary[dateList[i]]
+        print ("names:",names)
+        add          = difference[i-1]
+        start       += add*4
+        currentStack = []
+        nextStack    = []
+        for item in names:
+            if type(item)==dict:
+                tuples = item.popitem()
+                currentStack.append(tuples[0])
+                nextStack.extend(tuples[1])
+            else:
+                currentStack.append(item)
+        if currentStack:
+            space = ylimit/len(currentStack)
+            x= space
+            for item in currentStack:
+                pos[item] = (x,start)
+                x+=space
+        if nextStack:        
+            space = ylimit/len(nextStack)
+            x= space
+            start +=4
+            for item in nextStack:
+                pos[item] = (x,start)
+                x+=space        
+    return pos
+    
+"""
+function : Given a digraph, draw accordingly to options
+input    : DG,days_dictionary
+output   : N/A
+"""   
+def specificDraw(G,days_dictionary):
     # generate position for our nodes
-    pos = nx.spring_layout(G)
+    pos = assignPos(days_dictionary,1,100)
+#    print (pos)
+    node_size = 2000
+    node_labels=dict((n,d['name']) for n,d in G.nodes(data=True))
     options = {
     'node_color': 'blue',
-    'node_size': 2000,
+    'node_size': node_size,
     'width': 2,
     'arrowstyle': '-|>',
     'arrowsize': 12,
+    'labels': node_labels
     }
     nx.draw_networkx(G, pos,arrows=True, **options)
 #    nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size = 2000)
 #    nx.draw_networkx_edge_labels(G,pos,edge_labels=edge_labels)
 #    nx.draw_networkx_labels(G, pos)
+    
+    # configure x,y axis
+    plt.xlim(-10,80)
+    plt.ylim(-10,80)
     plt.show()
+
+    
 """
 function : Given root, draw a plot, x-axis indicate time line, y axis is just to space our graph
            Our main plot is a graph, with the root is the starting point, directed edge from
-           1 culture to other to show diluting process. 
+           1 culture to other to show diluting process, and directed edge from 1 culture to 1 other
+           for updating. 
+           
 input    : root (Cell)
-output   : DG
+output   : DG, a
 """   
 def visualization(root):
     ## create a digraph
     DG = nx.DiGraph()
+    days_dictionary = {}
     def dfs(node):
         if node:
             days    = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.day]
             ods     = node.od
-            # add node 
+            # add node as the beginning 
+            name    = node.name
+            volume  = node.volume
+            add     = node.add
+            DG.add_node("{}({})".format(name,days[0]),name = name,volume = volume,add = add,od = ods[0],day =days[0])
             
-            # add edge
+            for i in range(1,len(days)):
+                add = 0
+                # add the updating node
+                currentName = "{}({})".format(name,days[i])
+                parentName = "{}({})".format(name,days[i-1])
+                DG.add_node(currentName,name = name,volume = volume,add = add,od = ods[i],day =days[i])
+                DG.add_edge(parentName,currentName,volume= volume,add = add,type="update")
+                # take care of updating 
+                addDay(days_dictionary,node.day[i],currentName)
+            
+            # add edge from parent            
             if node.parent:
-                parentName = node.parent.name
-                nodeName   = node.name
-                add        = node.add
+                parentdays = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.parent.day]
+                parentName = "{}({})".format(node.parent.name,parentdays[-1])
+                nodeName   = "{}({})".format(node.name,days[0])
                 volume     = node.volume
-                DG.add_edge(parentName,nodeName,volume= volume,add = add)
+                DG.add_edge(parentName,nodeName,volume= volume,add = node.add,type="dilute")
+            # at leaf node, add normally using addDay
+            if not node.parent:
+                addDay(days_dictionary,node.day[0],"{}({})".format(name,days[0]))
+            # else, will have to add the current node as a dictionary
+            elif node.children:
+                name = "{}({})".format(node.name,days[-1])
+                day  = node.day[-1]
+                days = []
+                for c in node.children:
+                    cDays = ["{}-{}-{}".format(k.year,k.month,k.day) for k in c.day]        
+                    cName = "{}({})".format(c.name,cDays[0])
+                    days.append(cName)
+                d = {name:days}
+                if day in days_dictionary:
+                    days_dictionary[day].append(d)
+                else:
+                    days_dictionary[day].append[d]
             for child in node.children:
                 dfs(child)
                 
     dfs(root)  
     ## drawing
-    specificDraw(DG)
+    specificDraw(DG,days_dictionary)
     
-    return DG
+    return DG,days_dictionary
 ####################################################################################        
 # Main function to update, dilute and starts
 #################################################################################### 
@@ -422,11 +524,11 @@ def start(choice,typeErrorMess,ValueErrorMess):
 ###############################################################################
 if __name__ == "__main__":
     print ("*"*160)
-    typeErrorMess  = "Please provide the correct input format!!!\n"
-    ValueErrorMess = "Please provide the correct input value (within range)!!!\n"
-    
-    # check whether user want to start from scratch
-    choice = getChoice("Do you want to start a scratch experiment (Y,N)):\n",
-                      typeErrorMess,ValueErrorMess)
-    # start the cycle
-    start(choice,typeErrorMess,ValueErrorMess)
+#    typeErrorMess  = "Please provide the correct input format!!!\n"
+#    ValueErrorMess = "Please provide the correct input value (within range)!!!\n"
+#    
+#    # check whether user want to start from scratch
+#    choice = getChoice("Do you want to start a scratch experiment (Y,N)):\n",
+#                      typeErrorMess,ValueErrorMess)
+#    # start the cycle
+#    start(choice,typeErrorMess,ValueErrorMess)
