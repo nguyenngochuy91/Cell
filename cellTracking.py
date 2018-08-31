@@ -10,11 +10,11 @@
     End          : /2018
     Dependencies :  sudo pip install numpy
                     sudo pip install networkx
-                    sudo pip install matplotlib
+                    sudo pip install pydot
 '''
 import datetime
 import networkx as nx
-import matplotlib.pyplot as plt 
+import pydot
 from cell import Cell
 import json
 import os.path
@@ -249,14 +249,41 @@ def addDay(dictionary,day,name):
     
 """
 function : Given a digraph, draw accordingly to options
-input    : DG,days_dictionary
-output   : N/A
+input    : DG
+output   : graph (pydot)
 """   
 def specificDraw(G):
-    p=nx.drawing.nx_pydot.to_pydot(G)
-    p.write_png('example.png')
-#    nx.draw(G, pos=pos, with_labels=True)
-#    plt.savefig('hierarchy.png')
+    # generate a digraph for Dot
+    graph = pydot.Dot(graph_type='digraph')
+    d = {}
+    for n in G.node():
+        attribute = G.node[n]
+        name = "name: {}\ndate: {}\nod: {}\nvolume: {}ml".format(attribute['label'],attribute['day'],attribute['od'],attribute['volume'])
+        d[n] = name
+    for e in G.edges():
+        parent    = e[0]
+        children  = e[1]
+        attribute = G[parent][children]
+        v         = float(attribute['volume'])
+        add       = float(attribute['add'])
+        if attribute["type"] =="update":
+            newE      = pydot.Edge(d[parent],d[children],color="blue")
+        else:
+            newE      = pydot.Edge(d[parent],d[children], label ="{}ml+{}ml".format(v-add,add),fontsize="10.0", color="black")
+        graph.add_edge(newE)
+    while True:
+        outfile = takeInput("Please type in the textfile to save the picture (.png):\n",
+                            lambda myType: True,lambda myVal: True,"","")
+        if os.path.isfile(outfile):
+            choice = getChoice("File {}{}{} is already exists, do you want to replace it (Y,N)?:\n".format(bold,outfile,reset),
+                               typeErrorMess,ValueErrorMess)
+            if choice:
+                break
+        else:
+            break
+    graph.write_png(outfile)
+    return graph
+
 """
 function : Given root, draw a plot, x-axis indicate time line, y axis is just to space our graph
            Our main plot is a graph, with the root is the starting point, directed edge from
@@ -320,9 +347,8 @@ def visualization(root):
                 
     dfs(root)  
     ## drawing
-#    print (starting)
-#    specificDraw(DG,starting)
-    
+    p = specificDraw(DG)
+    print ("Thank you for using the software, come again soon ^^!!\n")
     return DG,days_dictionary
 ####################################################################################        
 # Main function to update, dilute and starts
@@ -458,11 +484,11 @@ def start(choice,typeErrorMess,ValueErrorMess):
 ###############################################################################
 if __name__ == "__main__":
     print ("*"*160)
-#    typeErrorMess  = "Please provide the correct input format!!!\n"
-#    ValueErrorMess = "Please provide the correct input value (within range)!!!\n"
-#    
-#    # check whether user want to start from scratch
-#    choice = getChoice("Do you want to start a scratch experiment (Y,N)):\n",
-#                      typeErrorMess,ValueErrorMess)
-#    # start the cycle
-#    start(choice,typeErrorMess,ValueErrorMess)
+    typeErrorMess  = "Please provide the correct input format!!!\n"
+    ValueErrorMess = "Please provide the correct input value (within range)!!!\n"
+    
+    # check whether user want to start from scratch
+    choice = getChoice("Do you want to start a scratch experiment (Y,N)):\n",
+                      typeErrorMess,ValueErrorMess)
+    # start the cycle
+    start(choice,typeErrorMess,ValueErrorMess)
