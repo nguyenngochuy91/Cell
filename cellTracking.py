@@ -14,8 +14,7 @@
 '''
 import datetime
 import networkx as nx
-import matplotlib.pyplot as plt 
-import numpy as np
+#import matplotlib.pyplot as plt 
 from cell import Cell
 import json
 import os.path
@@ -253,47 +252,45 @@ function : Given a digraph, and dictionary, assign coordinate for the pos
 input    : days_dictionary,start,ylimit
 output   : ps
 """  
-def assignPos(days_dictionary,start,ylimit):
+def assignPos(days_dictionary,start,ylimit,nodeSize):
     # assume the first day is the smallest day for the root node
 
     dateList = sorted(days_dictionary)
-    print ("dateList",dateList)
+
     difference = []
     for i in range(len(dateList)-1):
         difference.append((dateList[i+1]-dateList[i]).days)
-    print ("difference",difference)
     start = start
     root  = days_dictionary[dateList[0]][0]
     ylimit= float(ylimit)
-    pos = {root:(ylimit/2,start)}
+    pos = {root:(start,ylimit/2)}
     for i in range(1,len(dateList)):
         names         = days_dictionary[dateList[i]]
-        print ("names:",names)
         add          = difference[i-1]
-        start       += add*4
+        start       += nodeSize/100+add*4
         currentStack = []
         nextStack    = []
         for item in names:
-            if type(item)==dict:
-                tuples = item.popitem()
-                currentStack.append(tuples[0])
-                nextStack.extend(tuples[1])
+            if type(item)==list:
+                nextStack.extend(item)
             else:
                 currentStack.append(item)
         if currentStack:
-            space = ylimit/len(currentStack)
-            x= space
+            space = ylimit/(len(currentStack)+1)
+            y= space
             for item in currentStack:
-                pos[item] = (x,start)
-                x+=space
+                pos[item] = (start,y)
+                y+=space
         if nextStack:        
-            space = ylimit/len(nextStack)
-            x= space
+            space = ylimit/(len(nextStack)+1)
+            y= space
             start +=4
             for item in nextStack:
-                pos[item] = (x,start)
-                x+=space        
+                pos[item] =  (start,y)
+                y+=space        
     return pos
+
+
     
 """
 function : Given a digraph, draw accordingly to options
@@ -301,29 +298,18 @@ input    : DG,days_dictionary
 output   : N/A
 """   
 def specificDraw(G,days_dictionary):
-    # generate position for our nodes
-    pos = assignPos(days_dictionary,1,100)
-#    print (pos)
-    node_size = 2000
-    node_labels=dict((n,d['name']) for n,d in G.nodes(data=True))
-    options = {
-    'node_color': 'blue',
-    'node_size': node_size,
-    'width': 2,
-    'arrowstyle': '-|>',
-    'arrowsize': 12,
-    'labels': node_labels
-    }
-    nx.draw_networkx(G, pos,arrows=True, **options)
-#    nx.draw_networkx_nodes(G, pos, cmap=plt.get_cmap('jet'), node_size = 2000)
-#    nx.draw_networkx_edge_labels(G,pos,edge_labels=edge_labels)
-#    nx.draw_networkx_labels(G, pos)
-    
-    # configure x,y axis
-    plt.xlim(-10,80)
-    plt.ylim(-10,80)
-    plt.show()
-
+    try:
+        A = nx.to_agraph(G)
+    except:
+        A = nx.nx_agraph.to_agraph(G)
+#    write_dot(G,'test.dot')
+#    # same layout using matplotlib with no labels
+#    plt.title('draw_networkx')
+#    pos =graphviz_layout(G, prog='dot')
+#    nx.draw(G, pos, with_labels=True, arrows=True)
+#    plt.savefig('nx_test.png')
+    A.layout('dot', args='-Nfontsize=10 -Nwidth=".2" -Nheight=".2" -Nmargin=0 -Gfontsize=8')
+    A.draw('test.png')
     
 """
 function : Given root, draw a plot, x-axis indicate time line, y axis is just to space our graph
@@ -338,6 +324,8 @@ def visualization(root):
     ## create a digraph
     DG = nx.DiGraph()
     days_dictionary = {}
+    days            = ["{}-{}-{}".format(k.year,k.month,k.day) for k in root.day]
+    starting        = "{}({})".format(root.name,days[0])
     def dfs(node):
         if node:
             days    = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.day]
@@ -366,22 +354,24 @@ def visualization(root):
                 volume     = node.volume
                 DG.add_edge(parentName,nodeName,volume= volume,add = node.add,type="dilute")
             # at leaf node, add normally using addDay
-            if not node.parent:
+            if node == root:
                 addDay(days_dictionary,node.day[0],"{}({})".format(name,days[0]))
             # else, will have to add the current node as a dictionary
-            elif node.children:
+            if node.children:
                 name = "{}({})".format(node.name,days[-1])
                 day  = node.day[-1]
                 days = []
                 for c in node.children:
+
                     cDays = ["{}-{}-{}".format(k.year,k.month,k.day) for k in c.day]        
                     cName = "{}({})".format(c.name,cDays[0])
+                    if c.name =="Nhi_1":
+                        print (node.name)
                     days.append(cName)
-                d = {name:days}
                 if day in days_dictionary:
-                    days_dictionary[day].append(d)
+                    days_dictionary[day].append(days)
                 else:
-                    days_dictionary[day].append[d]
+                    days_dictionary[day]=[days]
             for child in node.children:
                 dfs(child)
                 
