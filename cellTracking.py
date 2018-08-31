@@ -14,7 +14,7 @@
 '''
 import datetime
 import networkx as nx
-#import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt 
 from cell import Cell
 import json
 import os.path
@@ -246,71 +246,17 @@ def addDay(dictionary,day,name):
         dictionary[day].append(name)
     else:
         dictionary[day] = [name]
-        
-"""
-function : Given a digraph, and dictionary, assign coordinate for the pos
-input    : days_dictionary,start,ylimit
-output   : ps
-"""  
-def assignPos(days_dictionary,start,ylimit,nodeSize):
-    # assume the first day is the smallest day for the root node
-
-    dateList = sorted(days_dictionary)
-
-    difference = []
-    for i in range(len(dateList)-1):
-        difference.append((dateList[i+1]-dateList[i]).days)
-    start = start
-    root  = days_dictionary[dateList[0]][0]
-    ylimit= float(ylimit)
-    pos = {root:(start,ylimit/2)}
-    for i in range(1,len(dateList)):
-        names         = days_dictionary[dateList[i]]
-        add          = difference[i-1]
-        start       += nodeSize/100+add*4
-        currentStack = []
-        nextStack    = []
-        for item in names:
-            if type(item)==list:
-                nextStack.extend(item)
-            else:
-                currentStack.append(item)
-        if currentStack:
-            space = ylimit/(len(currentStack)+1)
-            y= space
-            for item in currentStack:
-                pos[item] = (start,y)
-                y+=space
-        if nextStack:        
-            space = ylimit/(len(nextStack)+1)
-            y= space
-            start +=4
-            for item in nextStack:
-                pos[item] =  (start,y)
-                y+=space        
-    return pos
-
-
     
 """
 function : Given a digraph, draw accordingly to options
 input    : DG,days_dictionary
 output   : N/A
 """   
-def specificDraw(G,days_dictionary):
-    try:
-        A = nx.to_agraph(G)
-    except:
-        A = nx.nx_agraph.to_agraph(G)
-#    write_dot(G,'test.dot')
-#    # same layout using matplotlib with no labels
-#    plt.title('draw_networkx')
-#    pos =graphviz_layout(G, prog='dot')
-#    nx.draw(G, pos, with_labels=True, arrows=True)
-#    plt.savefig('nx_test.png')
-    A.layout('dot', args='-Nfontsize=10 -Nwidth=".2" -Nheight=".2" -Nmargin=0 -Gfontsize=8')
-    A.draw('test.png')
-    
+def specificDraw(G):
+    p=nx.drawing.nx_pydot.to_pydot(G)
+    p.write_png('example.png')
+#    nx.draw(G, pos=pos, with_labels=True)
+#    plt.savefig('hierarchy.png')
 """
 function : Given root, draw a plot, x-axis indicate time line, y axis is just to space our graph
            Our main plot is a graph, with the root is the starting point, directed edge from
@@ -334,14 +280,13 @@ def visualization(root):
             name    = node.name
             volume  = node.volume
             add     = node.add
-            DG.add_node("{}({})".format(name,days[0]),name = name,volume = volume,add = add,od = ods[0],day =days[0])
-            
+            DG.add_node("{}({})".format(name,days[0]),label = name,volume = volume,add = add,od = ods[0],day =days[0])
             for i in range(1,len(days)):
                 add = 0
                 # add the updating node
                 currentName = "{}({})".format(name,days[i])
                 parentName = "{}({})".format(name,days[i-1])
-                DG.add_node(currentName,name = name,volume = volume,add = add,od = ods[i],day =days[i])
+                DG.add_node(currentName,label = name,volume = volume,add = add,od = ods[i],day =days[i])
                 DG.add_edge(parentName,currentName,volume= volume,add = add,type="update")
                 # take care of updating 
                 addDay(days_dictionary,node.day[i],currentName)
@@ -365,8 +310,6 @@ def visualization(root):
 
                     cDays = ["{}-{}-{}".format(k.year,k.month,k.day) for k in c.day]        
                     cName = "{}({})".format(c.name,cDays[0])
-                    if c.name =="Nhi_1":
-                        print (node.name)
                     days.append(cName)
                 if day in days_dictionary:
                     days_dictionary[day].append(days)
@@ -377,7 +320,8 @@ def visualization(root):
                 
     dfs(root)  
     ## drawing
-    specificDraw(DG,days_dictionary)
+#    print (starting)
+#    specificDraw(DG,starting)
     
     return DG,days_dictionary
 ####################################################################################        
