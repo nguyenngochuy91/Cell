@@ -256,7 +256,11 @@ def specificDraw(G):
     # generate a digraph for Dot
     graph = pydot.Dot(graph_type='digraph')
     d = {}
-    for n in G.node():
+    try:
+        nodes = G.node()
+    except:
+        nodes = G.node
+    for n in nodes:
         attribute = G.node[n]
         name = "name: {}\ndate: {}\nod: {}\nvolume: {}ml".format(attribute['label'],attribute['day'],attribute['od'],attribute['volume'])
         d[n] = name
