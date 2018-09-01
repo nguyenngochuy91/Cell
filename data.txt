@@ -1,110 +1,110 @@
 {
-    "name": "Nhi", 
+    "name": "Nhi",
     "od": [
-        0.3, 
+        0.3,
         0.6
-    ], 
+    ],
     "day": [
-        "2018-8-29", 
+        "2018-8-29",
         "2018-8-31"
-    ], 
-    "volume": 10.0, 
-    "add": 0, 
-    "parent": null, 
+    ],
+    "volume": 10.0,
+    "add": 0,
+    "parent": null,
     "children": [
         {
-            "name": "Nhi_0", 
+            "name": "Nhi_0",
             "od": [
-                0.3, 
+                0.3,
                 0.8
-            ], 
+            ],
             "day": [
-                "2018-8-31", 
+                "2018-8-31",
                 "2018-9-20"
-            ], 
-            "volume": 10.0, 
-            "add": 5.0, 
-            "parent": "Nhi", 
+            ],
+            "volume": 10.0,
+            "add": 5.0,
+            "parent": "Nhi",
             "children": [
                 {
-                    "name": "Nhi_0_0", 
+                    "name": "Nhi_0_0",
                     "od": [
                         0.4
-                    ], 
+                    ],
                     "day": [
                         "2018-9-20"
-                    ], 
-                    "volume": 6.0, 
-                    "add": 3.0, 
-                    "parent": "Nhi_0", 
+                    ],
+                    "volume": 6.0,
+                    "add": 3.0,
+                    "parent": "Nhi_0",
                     "children": []
-                }, 
+                },
                 {
-                    "name": "Nhi_0_1", 
+                    "name": "Nhi_0_1",
                     "od": [
                         0.4
-                    ], 
+                    ],
                     "day": [
                         "2018-9-20"
-                    ], 
-                    "volume": 14.0, 
-                    "add": 7.0, 
-                    "parent": "Nhi_0", 
+                    ],
+                    "volume": 14.0,
+                    "add": 7.0,
+                    "parent": "Nhi_0",
                     "children": []
                 }
             ]
-        }, 
+        },
         {
-            "name": "Nhi_1", 
+            "name": "Nhi_1",
             "od": [
                 0.15
-            ], 
+            ],
             "day": [
                 "2018-8-31"
-            ], 
-            "volume": 10.0, 
-            "add": 7.5, 
-            "parent": "Nhi", 
+            ],
+            "volume": 10.0,
+            "add": 7.5,
+            "parent": "Nhi",
             "children": []
-        }, 
+        },
         {
-            "name": "Nhi_2", 
+            "name": "Nhi_2",
             "od": [
-                0.15, 
+                0.15,
                 0.7
-            ], 
+            ],
             "day": [
-                "2018-8-31", 
+                "2018-8-31",
                 "2018-9-15"
-            ], 
-            "volume": 10.0, 
-            "add": 7.5, 
-            "parent": "Nhi", 
+            ],
+            "volume": 10.0,
+            "add": 7.5,
+            "parent": "Nhi",
             "children": [
                 {
-                    "name": "Nhi_2_0", 
+                    "name": "Nhi_2_0",
                     "od": [
                         0.3
-                    ], 
+                    ],
                     "day": [
                         "2018-9-15"
-                    ], 
-                    "volume": 11.67, 
-                    "add": 6.67, 
-                    "parent": "Nhi_2", 
+                    ],
+                    "volume": 11.67,
+                    "add": 6.67,
+                    "parent": "Nhi_2",
                     "children": []
-                }, 
+                },
                 {
-                    "name": "Nhi_2_1", 
+                    "name": "Nhi_2_1",
                     "od": [
                         0.4
-                    ], 
+                    ],
                     "day": [
                         "2018-9-15"
-                    ], 
-                    "volume": 8.75, 
-                    "add": 3.75, 
-                    "parent": "Nhi_2", 
+                    ],
+                    "volume": 8.75,
+                    "add": 3.75,
+                    "parent": "Nhi_2",
                     "children": []
                 }
             ]

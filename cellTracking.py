@@ -157,14 +157,16 @@ def createRoot(typeErrorMess,ValueErrorMess):
                        typeErrorMess,ValueErrorMess)
         od     = getOd(typeErrorMess,ValueErrorMess)
         volume = getVolume(typeErrorMess,ValueErrorMess)
-
+        media  = takeInput("Please type in the name of the media:\n", 
+                       lambda myType: True, lambda myVal: True,
+                       typeErrorMess,ValueErrorMess)
         ## double check if this is what the user want to do
-        choice = getChoice("Are you sure to create a root that has name as {} {}{}, od as {} {}{}, volume as {} {}{} and date as {} {}{}? :\n".format(
-                bold,name,reset,bold,od,reset,bold,volume,reset,bold,today,reset),
+        choice = getChoice("Are you sure to create a root that has \nname as {} {}{},\nod as {} {}{},\nvolume as {} {}{},\nmedia as {} {}{},\nand date as {} {}{}? :\n".format(
+                bold,name,reset,bold,od,reset,bold,volume,reset,bold,media,reset,bold,today,reset),
                            typeErrorMess,ValueErrorMess)
 
         if choice in "yY":
-            root  = Cell(name=name,od=od,volume=volume,day=today)
+            root  = Cell(name=name,od=od,volume=volume,day=today,media=media)
             break
     
     return root
@@ -198,8 +200,9 @@ def readIn():
 
             volume   = d["volume"] 
             add      = d["add"]
+            media    = d["media"]
             children = []
-            node     = Cell(name=name,od=od,volume=volume)
+            node     = Cell(name=name,od=od,volume=volume,media)
             node.day = day
             node.od  = od
             node.add = add
@@ -249,10 +252,10 @@ def addDay(dictionary,day,name):
     
 """
 function : Given a digraph, draw accordingly to options
-input    : DG
+input    : DG,typeErrorMess,ValueErrorMess
 output   : graph (pydot)
 """   
-def specificDraw(G):
+def specificDraw(G,typeErrorMess,ValueErrorMess,media):
     # generate a digraph for Dot
     graph = pydot.Dot(graph_type='digraph')
     d = {}
@@ -260,10 +263,15 @@ def specificDraw(G):
         nodes = G.node()
     except:
         nodes = G.node
+    newNode = pydot.Node("media: {}".format(media),style="filled", fillcolor="green")
+    graph.add_node(newNode)
     for n in nodes:
         attribute = G.node[n]
         name = "name: {}\ndate: {}\nod: {}\nvolume: {}ml".format(attribute['label'],attribute['day'],attribute['od'],attribute['volume'])
         d[n] = name
+        newNode = pydot.Node(name)
+        newNode.obj_dict['name'] = name
+        graph.add_node(newNode)
     for e in G.edges():
         parent    = e[0]
         children  = e[1]
@@ -275,6 +283,8 @@ def specificDraw(G):
         else:
             newE      = pydot.Edge(d[parent],d[children], label ="{}ml+{}ml".format(v-add,add),fontsize="10.0", color="black")
         graph.add_edge(newE)
+        
+        
     while True:
         outfile = takeInput("Please type in the textfile to save the picture (.png):\n",
                             lambda myType: True,lambda myVal: True,"","")
@@ -297,7 +307,7 @@ function : Given root, draw a plot, x-axis indicate time line, y axis is just to
 input    : root (Cell)
 output   : DG, a
 """   
-def visualization(root):
+def visualization(root,typeErrorMess,ValueErrorMess):
     ## create a digraph
     DG = nx.DiGraph()
     days_dictionary = {}
@@ -351,9 +361,9 @@ def visualization(root):
                 
     dfs(root)  
     ## drawing
-    p = specificDraw(DG)
+    p = specificDraw(DG,typeErrorMess,ValueErrorMess,root.media)
     print ("Thank you for using the software, come again soon ^^!!\n")
-    return DG,days_dictionary
+    return DG,days_dictionary,p
 ####################################################################################        
 # Main function to update, dilute and starts
 #################################################################################### 
@@ -481,7 +491,7 @@ def start(choice,typeErrorMess,ValueErrorMess):
     # write the item into a file using json
     writeOut(root,typeErrorMess,ValueErrorMess)
     # visualize the process
-    DG = visualization(root)
+    DG,d,p = visualization(root,typeErrorMess,ValueErrorMess)
     
 ###############################################################################
 ## driver program
@@ -490,9 +500,9 @@ if __name__ == "__main__":
     print ("*"*160)
     typeErrorMess  = "Please provide the correct input format!!!\n"
     ValueErrorMess = "Please provide the correct input value (within range)!!!\n"
-    
-    # check whether user want to start from scratch
-    choice = getChoice("Do you want to start a scratch experiment (Y,N)):\n",
-                      typeErrorMess,ValueErrorMess)
-    # start the cycle
-    start(choice,typeErrorMess,ValueErrorMess)
+#    
+#    # check whether user want to start from scratch
+#    choice = getChoice("Do you want to start a scratch experiment (Y,N)):\n",
+#                      typeErrorMess,ValueErrorMess)
+#    # start the cycle
+#    start(choice,typeErrorMess,ValueErrorMess)

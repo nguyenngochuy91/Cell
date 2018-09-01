@@ -17,7 +17,7 @@
 import collections
 
 class Cell(object):
-    def __init__(self,name,od,volume=None,day = 0,parent= None):
+    def __init__(self,name,od,volume=None,day = 0,parent= None,media = ""):
         self.name       = name # name of the culture
         self.od         = [od] # list of ods value, this will getting updated until dilution
         self.volume     = volume
@@ -25,6 +25,7 @@ class Cell(object):
         self.children   = []
         self.parent     = parent
         self.add        = 0
+        self.media      = media
  
     """
     function : giving the cell / culture, and the new od, and the day since last update, we update our Cell object
@@ -68,6 +69,7 @@ class Cell(object):
                 d["day"]      = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.day]
                 d["volume"]   = node.volume
                 d["add"]      = node.add
+                d["media"]    = node.media
                 if node.parent:
                     d["parent"]   = node.parent.name
                 else:
