@@ -202,7 +202,7 @@ def readIn():
             add      = d["add"]
             media    = d["media"]
             children = []
-            node     = Cell(name=name,od=od,volume=volume,media)
+            node     = Cell(name=name,od=od,volume=volume,media=media)
             node.day = day
             node.od  = od
             node.add = add
