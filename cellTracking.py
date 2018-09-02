@@ -265,6 +265,7 @@ def specificDraw(G,typeErrorMess,ValueErrorMess,media):
         nodes = G.node
     newNode = pydot.Node("media: {}".format(media),style="filled", fillcolor="green")
     graph.add_node(newNode)
+    newNode.obj_dict['name'] = media
     for n in nodes:
         attribute = G.node[n]
         name = "name: {}\ndate: {}\nod: {}\nvolume: {}ml".format(attribute['label'],attribute['day'],attribute['od'],attribute['volume'])
@@ -501,8 +502,8 @@ if __name__ == "__main__":
     typeErrorMess  = "Please provide the correct input format!!!\n"
     ValueErrorMess = "Please provide the correct input value (within range)!!!\n"
     
-    # check whether user want to start from scratch
-    choice = getChoice("Do you want to start a scratch experiment (Y,N)):\n",
-                      typeErrorMess,ValueErrorMess)
-    # start the cycle
-    start(choice,typeErrorMess,ValueErrorMess)
+#    # check whether user want to start from scratch
+#    choice = getChoice("Do you want to start a scratch experiment (Y,N)):\n",
+#                      typeErrorMess,ValueErrorMess)
+#    # start the cycle
+#    start(choice,typeErrorMess,ValueErrorMess)
