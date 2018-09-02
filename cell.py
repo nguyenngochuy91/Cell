@@ -1,12 +1,9 @@
 #!/usr/bin/env python
-''' Author       : Huy Nguyen
+''' Authors      : Huy Nguyen, Nhi
     Program      : Cell Tracking
                     class of cell
     Start        : 08/04/2018
-    End          : /2018
-    Dependencies : sudo pip install networkx
-                   sudo pip install plotly
-                   sudo pip install json
+    End          : /2018 
 '''
 # a class of cell, each cell object will be defined with a name, od, and volume
 # and a dictionary that stores info so we can dump it later into json file to

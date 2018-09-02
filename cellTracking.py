@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-''' Author       : Huy Nguyen
+''' Authors      : Huy Nguyen, Nhi
     Program      : Cell Tracking
                     This will take input from the user, the user can either 
                     create a Cell object (or experiment) from scrath, or read it in from a textfile (json format)
@@ -8,9 +8,8 @@
                     as w
     Start        : 08/04/2018
     End          : /2018
-    Dependencies :  sudo pip install numpy
-                    sudo pip install networkx
-                    sudo pip install pydot
+    Dependencies :  networkx
+                    pydot
 '''
 import datetime
 import networkx as nx
