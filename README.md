@@ -37,11 +37,9 @@ there are information of the culture at the date mark. Each edge is labeled with
 
 ## Examples:
 Here are the examples of a text file and the png file.
-1. data.txt
-
+### data.txt
 
 ![data](https://github.com/nguyenngochuy91/Cell/blob/master/text.png)
-2. data.png
-
+### data.png
 
 ![data](https://github.com/nguyenngochuy91/Cell/blob/master/data.png)
