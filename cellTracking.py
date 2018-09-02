@@ -502,8 +502,8 @@ if __name__ == "__main__":
     typeErrorMess  = "Please provide the correct input format!!!\n"
     ValueErrorMess = "Please provide the correct input value (within range)!!!\n"
     
-#    # check whether user want to start from scratch
-#    choice = getChoice("Do you want to start a scratch experiment (Y,N)):\n",
-#                      typeErrorMess,ValueErrorMess)
-#    # start the cycle
-#    start(choice,typeErrorMess,ValueErrorMess)
+    # check whether user want to start from scratch
+    choice = getChoice("Do you want to start a scratch experiment (Y,N)):\n",
+                      typeErrorMess,ValueErrorMess)
+    # start the cycle
+    start(choice,typeErrorMess,ValueErrorMess)
