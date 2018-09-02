@@ -403,7 +403,7 @@ def dilute(root,names,leaves,typeErrorMess,ValueErrorMess):
         today = getDate(typeErrorMess,ValueErrorMess)
         numberDilution = int(takeInput("Please type in the number of culture after diluting (>=1):\n",
                                    lambda myType: True if myType.isdigit() else False,
-                                   lambda myVal: True if myVal>0 else False,
+                                   lambda myVal: True if int(myVal)>0 else False,
                                    typeErrorMess,
                                    ValueErrorMess))
         print ("You have chosen to dilute {} into {} cultures, please type in the following info as instructed \n".format(name,numberDilution))
