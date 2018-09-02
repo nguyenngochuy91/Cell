@@ -36,3 +36,8 @@ the node represent a culture, an edge from one culture to the next could be an u
 there are information of the culture at the date mark. Each edge is labeled with the amount of media added with the volume of the starting culture. 
 
 ## Examples:
+Here are the examples of a text file and the png file.
+1. data.txt
+![data]()
+2. data.png
+![data]
