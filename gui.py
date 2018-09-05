@@ -125,7 +125,7 @@ def validate(entries):
                          .format(name,od,volume,media,date)):       
         root = Cell(name=dictionary['name'],od =dictionary['od'],volume=dictionary['volume'],
                 media = dictionary['media'], day =dictionary['date'])
-        return root
+
             
 """
 function : After validating the user input, output Cell
@@ -232,7 +232,6 @@ class PageTwo(tk.Frame):
         button2.pack()
         
 
-def main():
-    app = Main()
-    app.mainloop()
-main()
+
+app = Main()
+app.mainloop()
