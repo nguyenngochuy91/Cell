@@ -6,9 +6,13 @@
 '''
 try:
     import tkinter as tk
-    import messagebox as messageBox
+    from tkinter import ttk
 except:
     import Tkinter as tk
+    from Tkinter import ttk
+try:
+    import tkinter.messagebox as messageBox
+except:
     import tkMessageBox as messageBox
 from cell import Cell
 import cellTracking
@@ -18,10 +22,13 @@ import datetime
 #global variable
 ###############################################################################
 LARGE_FONT= ("Verdana", 40)
+MIDDLE_FONT= ("Verdana", 30)
 ##function to get input for pageOne
-fields = ['Name of the experiment', 'Name of the Media', 'Optical Density', 'Volume (ml)','Date (yyyy-mm-dd)']
+rootFields = ['Name', 'Media', 'Optical Density', 'Volume (ml)','Date (yyyy-mm-dd)']
+nodeFields = ['Name', 'Optical Density', 'Volume (ml)','Date (yyyy-mm-dd)']
+dictionary = {}
 ###############################################################################
-## helper functions
+## helper functions, validating
 ###############################################################################
 ## check if a number is float:
 def isFloat(n):
@@ -74,16 +81,13 @@ def validateInput(message,field,typeChecking,valueChecking):
         messageBox.showerror("Type Error","Sorry, your type {} in field {} is not corrected!!!".format(message,field))
     return None
 
-
-
 """
 function : function takes in user input, check it with errorChecking function, and 
-           keep promting if input is not good
-input    : entries
-output   : N/A
+           keep promting if input is not good. 
+input    : controller,entries,checkName
+output   : dictionary
 """
-# fetching info from the entries, error checking as well
-def validate(entries):
+def checkInput(controller,entries,checkName):
     dictionary = {}
     for entry in entries:
         field = entry[0]
@@ -114,26 +118,70 @@ def validate(entries):
                 dictionary['date']= date
             else:
                 return False
-        elif field =='Name of the experiment':
-            name = text
+        elif field =='Name':
+            name = validateInput(text,field, lambda myType: True if checkName(text) else False, 
+                       lambda myVal: True )
             dictionary['name']= name
         else:
             media = text
             dictionary['media']= media
-    # success
-    if messageBox.askyesno("Congratz!!!","Are you sure to create a root that has name as  {}, od as {}, volume as {},media as {},and date as {}? "
+    return dictionary
+"""
+function : function takes in user input, check it with errorChecking function, and 
+           keep promting if input is not good. If theinput is good and user accepts it, it goes to
+           the nextPage of diluting or somethingelse
+input    : controller,entries
+output   : N/A
+"""
+def validateRoot(controller,entries):
+    dictionary = checkInput(controller,entries,lambda x: True)
+    name,od,volume,media,date = dictionary['name'],dictionary['od'],dictionary['volume'],dictionary['media'],dictionary['date']
+    
+    # success, then make a root, set the root to the controller, and move to next phase
+    if messageBox.askyesno("Congratz!!!","Are you sure to create a root that has name as  {}, od as {}, volume as {}mL,media as {},and date as {}? "
                          .format(name,od,volume,media,date)):       
         root = Cell(name=dictionary['name'],od =dictionary['od'],volume=dictionary['volume'],
                 media = dictionary['media'], day =dictionary['date'])
+        # show the page of PageThree
+        controller.setRoot(root)
+#        print (controller.getRoot().name)
+        # add the new pages to the dictionary
+        for F in controller.phase2:
 
-            
+            frame = F(controller.container, controller)
+
+            controller.frames[F] = frame
+
+            frame.grid(row=0, column=0, sticky="nsew")
+        controller.showFrame(PageThird)
+ 
 """
-function : After validating the user input, output Cell
+function : function takes in user input, check it with errorChecking function, and 
+           keep promting if input is not good. If theinput is good and user accepts it, it goes to
+           the nextPage of diluting or somethingelse
+input    : controller,entries
+output   : N/A
+"""
+def validateNodeUpdate(controller,entries,leafNames):
+    dictionary = checkInput(controller,entries,lambda x: True if x in leafNames else False)
+    name,od,volume,date = dictionary['name'],dictionary['od'],dictionary['volume'],dictionary['date']
+    # success, then make a root, set the root to the controller, and move to next phase
+    if messageBox.askyesno("Congratz!!!","Are you sure to update a node that has name as  {}, od as {}, volume as {}mL, and date as {}? "
+                         .format(name,od,volume,date)):     
+        # update the node
+        targetNode = controller.root.getNodeFromRoot(dictionary['name'])
+        targetNode.update(od,date)
+        # go back to pageThird
+        controller.showFrame(PageThird)
+        
+                       
+"""
+function : given the fields for user to fill in, make Entries for the frame
 input    : master,entries
-output   : Cell object
+output   : list of Entries
 """          
 
-def makeform(master, fields):
+def makeForm(master, fields):
    entries = []
    for field in fields:
       row = tk.Frame(master)
@@ -151,18 +199,19 @@ class Main(tk.Tk):
     def __init__(self, *args, **kwargs):
         
         tk.Tk.__init__(self, *args, **kwargs)
-        container = tk.Frame(self)
+        self.container = tk.Frame(self)
 
-        container.pack(side="top", fill="both", expand = True)
+        self.container.pack(side="top", fill="both", expand = True)
 
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
-        print (container)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
         self.frames = {}
+        self.root = None
+        self.phase1 = [StartPage, PageOne, PageTwo]
+        self.phase2 = [PageThird, UpdatePage, DilutePage, DonePage]
+        for F in self.phase1:
 
-        for F in (StartPage, PageOne, PageTwo):
-
-            frame = F(container, self)
+            frame = F(self.container, self)
 
             self.frames[F] = frame
 
@@ -174,7 +223,10 @@ class Main(tk.Tk):
 
         frame = self.frames[cont]
         frame.tkraise()
-
+    def setRoot(self,root):
+        self.root = root
+    def getRoot(self):
+        return self.root
         
 class StartPage(tk.Frame):
 
@@ -182,10 +234,10 @@ class StartPage(tk.Frame):
         tk.Frame.__init__(self,parent)
         label = tk.Label(self, text="Welcome to the Culture Tracking Program", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
-        button = tk.Button(self, text="Start new experiment",
+        button = ttk.Button(self, text="Start new experiment",
                             command=lambda: controller.showFrame(PageOne))
         button.pack()
-        button2 = tk.Button(self, text="Continue old experiment",
+        button2 = ttk.Button(self, text="Continue old experiment",
                             command=lambda: controller.showFrame(PageTwo))
         button2.pack()
 
@@ -197,20 +249,20 @@ class PageOne(tk.Frame):
         label = tk.Label(self, text="Start new experiment", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
         # generate entry to store info
-        ents = makeform(self, fields)
+        ents = makeForm(self, rootFields)
         # enter means storing info, validate the values, only validate after user
         # press OK button
-        b1 = tk.Button(self, text='OK',
-                        command=(lambda e=ents: validate(e)))
+        b1 = ttk.Button(self, text='OK',
+                        command=(lambda e=ents: validateRoot(controller,e)))
         b1.pack(side=tk.LEFT, padx=5, pady=5)
         
         
         # buttons to navigate through frames
-        button1 = tk.Button(self, text="Back to Home",
+        button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: controller.showFrame(StartPage))
         button1.pack()
 
-        button2 = tk.Button(self, text="Continue old experiment",
+        button2 = ttk.Button(self, text="Continue old experiment",
                             command=lambda: controller.showFrame(PageTwo))
         button2.pack()
 
@@ -223,15 +275,79 @@ class PageTwo(tk.Frame):
         label.pack(pady=10,padx=10)
         
         # buttons to navigate through frames
-        button1 = tk.Button(self, text="Back to Home",
+        button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: controller.showFrame(StartPage))
         button1.pack()
 
-        button2 = tk.Button(self, text="Start new experiment",
+        button2 = ttk.Button(self, text="Start new experiment",
                             command=lambda: controller.showFrame(PageOne))
         button2.pack()
         
+class PageThird(tk.Frame):
 
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.root = None
+        label = tk.Label(self, text="Do you want to update, dilute, or are you done?", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
+        button = ttk.Button(self, text="Update",
+                            command=lambda: controller.showFrame(UpdatePage))
+        button.pack()
+        button2 = ttk.Button(self, text="Dilute",
+                            command=lambda: controller.showFrame(DilutePage))
+        button2.pack()
+        button3 = ttk.Button(self, text="Done",
+                            command=lambda: controller.showFrame(DonePage))
+        button3.pack()     
 
+class UpdatePage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        leafNames =",".join(controller.root.getLeafNames()) 
+        label = tk.Label(self, text="Please type in the culture you want to update, it can only come from the following list: {}\n".format(leafNames),
+                         font=MIDDLE_FONT)
+        label.pack(pady=10,padx=10)        
+        # create entries for this update
+        ents = makeForm(self, nodeFields)
+        # enter means storing info, validate the values, only validate after user
+        # press OK button
+        b1 = ttk.Button(self, text='OK',
+                        command=(lambda e=ents: validateNodeUpdate(controller,ents,leafNames)))
+        b1.pack(side=tk.LEFT, padx=5, pady=5)
+class DilutePage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        leafNames =",".join(controller.root.getLeafNames()) 
+        label = tk.Label(self, text="Please type in the culture you want to dilute, it can only come from the following list: {}\n".format(leafNames),
+                         font=MIDDLE_FONT)
+        label.pack(pady=10,padx=10)        
+        # create entries for this update
+        ents = makeForm(self, nodeFields)
+        # enter means storing info, validate the values, only validate after user
+        # press OK button
+        b1 = ttk.Button(self, text='OK',
+                        command=(lambda e=ents: validateNodeUpdate(controller,ents,leafNames)))
+        b1.pack(side=tk.LEFT, padx=5, pady=5)
+        # Ok button
+#        b1 = ttk.Button(self, text='OK',
+#                        command=(lambda e=ents: validate(controller,e)))
+#        b1.pack(side=tk.LEFT, padx=5, pady=5)    
+class DonePage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        label = tk.Label(self, text="We are done, let us save our process", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
+        button = ttk.Button(self, text="Quit",
+                            command=lambda: controller.destroy())
+        button.pack()
+        button2 = ttk.Button(self, text="Main Menu",
+                            command=lambda: controller.showFrame(StartPage))
+        button2.pack()
+###############################################################################
+## running the program
+###############################################################################
 app = Main()
 app.mainloop()
