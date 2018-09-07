@@ -557,7 +557,7 @@ class Main(tk.Tk):
         self.createCanvas()
         self.openImage()
     def openImage(self):
-        img = mpimg.imread("/home/huyn/Nhi/Cell/NH.jpg")
+        img = mpimg.imread("NH.jpg")
         self.ax1.imshow(img)
         self.canvas1.draw()
     def createCanvas(self):
