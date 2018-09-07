@@ -399,7 +399,7 @@ def visualization(root):
             
             # add edge from parent            
             if node.parent:
-                parentdates = ["{}-{}-{}".format(k.year,k.month,k.date) for k in node.parent.date]
+                parentdates = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.parent.date]
                 parentName = "{}({})".format(node.parent.name,parentdates[-1])
                 nodeName   = "{}({})".format(node.name,dates[0])
                 volume     = node.volume
@@ -411,7 +411,7 @@ def visualization(root):
                 dates = []
                 for c in node.children:
 
-                    cdates = ["{}-{}-{}".format(k.year,k.month,k.date) for k in c.date]        
+                    cdates = ["{}-{}-{}".format(k.year,k.month,k.day) for k in c.date]        
                     cName = "{}({})".format(c.name,cdates[0])
                     dates.append(cName)
             for child in node.children:
