@@ -39,7 +39,7 @@ there are information of the culture at the date mark. Each edge is labeled with
 Here are the examples of a text file and the png file.
 ### data.txt
 
-![data](https://github.com/nguyenngochuy91/Cell/blob/master/data.txt)
+![data](https://github.com/nguyenngochuy91/Cell/blob/master/dictionary.png)
 ### data.png
 
 ![data](https://github.com/nguyenngochuy91/Cell/blob/master/data.png)

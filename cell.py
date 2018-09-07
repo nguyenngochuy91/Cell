@@ -29,9 +29,10 @@ class Cell(object):
     input    : od, date
     output   : N/A
     """
-    def update(self,od,date)   :
+    def update(self,od,date,volume)   :
         self.od.append(od)
         self.date.append(date)
+        self.volume = volume
     """
     function : Giving arrays of volume and ods for the children, calculate how much media volumn to be added
               and how much volumn after in each dilution

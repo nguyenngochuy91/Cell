@@ -3,6 +3,7 @@
     Program      : GUI for the program that track culture growing
     Start        : 09/02/2018
     End          : 09/06/2018
+    Dependecies  : networkx, pydot, matplotlib
 '''
 try:
     import tkinter as tk
@@ -19,6 +20,9 @@ import datetime
 import json
 import networkx as nx
 import pydot
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+import matplotlib.image as mpimg
 ###############################################################################
 #global variable
 ###############################################################################
@@ -203,14 +207,15 @@ output   : N/A
 def validateUpdatePhase2(controller,entries):
     currentNode = controller.getCurrentNode()
     name        = currentNode.name
-    dictionary = checkInput(controller,entries,lambda x: True,lambda x: True)
+    currentDate = currentNode.date[-1]
+    dictionary = checkInput(controller,entries,lambda x: True,lambda x: True if x>= currentDate else False)
     if dictionary:
         od,volume,media,date = dictionary['od'],dictionary['volume'],dictionary['media'],dictionary['date']
         # success, then make a root, set the root to the controller, and move to next phase
         if messageBox.askyesno("Updatinggg!!!","Are you sure to update the node that has name as  {}, od as {}, volume as {}mL, media as {}, and date as {}? "
                              .format(name,od,volume,media,date)):     
             # update the node
-            currentNode.update(od,date)
+            currentNode.update(od,date,volume)
             # go back to PageThree
             controller.showFrame(PageThree)
             
@@ -221,7 +226,7 @@ input    : controller,entries,leafNames
 output   : N/A
 """
 def validateNodeDilutePhase1(controller,entries,leafNames):
-    dictionary = checkInput(controller,entries,lambda x: True if x in leafNames else False,lambda x: True)
+    dictionary = checkInput(controller,entries,lambda x: True if x in leafNames else False,lambda x: True )
     if dictionary:
         name,numChildren = dictionary['name'],dictionary['numChildren']
         # success, then make get the current node to dilute, number of children, the date, then move on to phase 2
@@ -257,23 +262,24 @@ def validateNodeDilutePhase2(controller,entries):
     ods         = []
     volumes     = []
     names       = []
-    dateEntry   = [entries.pop(0)]
+    dateEntry   = [entries[0]]
     dictionary  = checkInput(controller,dateEntry,lambda x: True,lambda x: True if x>= currentDate else False)
 
     if dictionary:
         date = dictionary['date']
     else:
         check = False
+        return
     for i in range(numChildren):
         childName  = name+"_"+str(i)
         names.append(childName)
-        dictionary = checkInput(controller,entries[i*size:i*size+size],lambda x: True ,lambda x: True )
+        dictionary = checkInput(controller,entries[i*size+1:i*size+size+1],lambda x: True ,lambda x: True )
         if not dictionary:
             check   = False
             ods     = []
             volumes = []
             names   = []
-            break
+            return
         else:
             ods.append(dictionary['od'])
             volumes.append(dictionary['volume'])
@@ -284,6 +290,7 @@ def validateNodeDilutePhase2(controller,entries):
     else:
         check = False
         messageBox.showerror("Value Error","Attention folks, sum of the volumes is greater to our old volume, you will be need to retype the infos!!!")
+        return
     if check:       
         culture = "name: {}, od: {}, volume: {} \n"
         result  = ""
@@ -297,6 +304,8 @@ def validateNodeDilutePhase2(controller,entries):
 
             # go back to PageThree
             controller.showFrame(PageThree) 
+        else:
+            return
                     
 """
 function : given the fields for user to fill in, make Entries for the frame
@@ -434,12 +443,13 @@ output   : N/A
 """   
 def openFile(controller,master):
     infile = fileDialog.askopenfile(parent=master,mode='rb',title='Open File')
-    root   = readIn(infile)
-    # set controller root as root
-    controller.setRoot(root)
-
-    # go to page done
-    controller.showFrame(PageThree)
+    if infile:
+        root   = readIn(infile)
+        # set controller root as root
+        controller.setRoot(root)
+    
+        # go to page done
+        controller.showFrame(PageThree)
     
 """
 function : function that reads in a json text file, and parse info into a Cell object
@@ -484,7 +494,8 @@ def saveTxtFile(controller,master):
     outfile = fileDialog.asksaveasfile(parent=master,mode='w',title='Save File')
     dictionary = controller.getRoot().toDictionary()
     # write out
-    writeOut(outfile,dictionary)
+    if outfile:
+        writeOut(outfile,dictionary)
 
     # go to page Three
     controller.showFrame(DonePage)
@@ -507,7 +518,8 @@ def saveVisualizationFile(controller,master):
     root = controller.getRoot()
     graph = visualization(root)
     outfile = fileDialog.asksaveasfile(parent=master,mode='w',title='Save File')
-    graph.write_png(outfile.name)
+    if outfile and graph:
+        graph.write_png(outfile.name)
     controller.showFrame(DonePage)
 ###############################################################################
 ## classes for handling frames
@@ -532,6 +544,7 @@ class Main(tk.Tk):
         self.numberChildren = 0
         self.date = datetime.date.today()
         self.pages = [StartPage, PageOne, PageTwo, PageThree, UpdatePage1,UpdatePage2, DilutePage1, DilutePage2,DonePage]
+        
         for F in self.pages:
 
             frame = F(self.container, self)
@@ -541,7 +554,19 @@ class Main(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.showFrame(StartPage)
-        
+        self.createCanvas()
+        self.openImage()
+    def openImage(self):
+        img = mpimg.imread("/home/huyn/Nhi/Cell/NH.jpg")
+        self.ax1.imshow(img)
+        self.canvas1.draw()
+    def createCanvas(self):
+        """ Add a canvas to plot images """        
+        self.fig1 = Figure(frameon=False, figsize=(2, 2))
+        self.canvas1 = FigureCanvasTkAgg(self.fig1, master=self.frames[StartPage])
+        self.canvas1.get_tk_widget().pack(fill=tk.X, expand=1)
+        self.ax1 = self.fig1.add_axes([0, 0, 1, 1])
+        self.ax1.axis('off')        
     # bring the current frame up
     def showFrame(self, cont):
         frame = self.frames[cont]
@@ -575,6 +600,7 @@ class Main(tk.Tk):
 class StartPage(tk.Frame):
 
     def __init__(self, parent, controller):
+        self.controller = controller
         tk.Frame.__init__(self,parent)
         label = tk.Label(self, text="Welcome to the Culture Tracking Program", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
@@ -584,7 +610,6 @@ class StartPage(tk.Frame):
         button2 = ttk.Button(self, text="Continue old experiment",
                             command=lambda: controller.showFrame(PageTwo))
         button2.pack()
-
 
 # Page One for create new experiment 
 class PageOne(tk.Frame):
@@ -792,7 +817,6 @@ class DilutePage2(tk.Frame):
             label.pack(pady=10,padx=10)   
             ents = makeForm(self, diluteFields2)
             entries.extend(ents)
-
         # enter means storing info, validate the values, only validate after user
         # press OK button
         button1 = ttk.Button(self, text='OK',
