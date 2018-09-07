@@ -381,7 +381,7 @@ def visualization(root):
     DG = nx.DiGraph()
     def dfs(node):
         if node:
-            dates    = ["{}-{}-{}".format(k.year,k.month,k.date) for k in node.date]
+            dates    = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.date]
             ods     = node.od
             # add node as the beginning 
             name    = node.name
