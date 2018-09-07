@@ -18,11 +18,12 @@ except:
 from cell import Cell
 import datetime
 import json
-import networkx as nx
-import pydot
+
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import matplotlib.image as mpimg
+import networkx as nx
+import pydot
 ###############################################################################
 #global variable
 ###############################################################################
@@ -457,7 +458,10 @@ input    : infile
 output   : root (Cell object)
 """   
 def readIn(infile):
-    dictionary = json.load(infile)
+    try: 
+        dictionary = json.load(infile)
+    except:
+        dictionary = json.load(open(infile.name,'r'))
     def dfs(d):
         if d:
             name     = d["name"]     
