@@ -14,31 +14,31 @@
 import collections
 
 class Cell(object):
-    def __init__(self,name,od,volume=None,day = 0,parent= None,media = ""):
+    def __init__(self,name,od,volume=None,date = 0,parent= None,media = ""):
         self.name       = name # name of the culture
         self.od         = [od] # list of ods value, this will getting updated until dilution
         self.volume     = volume
-        self.day        = [day]
+        self.date        = [date]
         self.children   = []
         self.parent     = parent
         self.add        = 0
         self.media      = media
  
     """
-    function : giving the cell / culture, and the new od, and the day since last update, we update our Cell object
-    input    : od, day
+    function : giving the cell / culture, and the new od, and the date since last update, we update our Cell object
+    input    : od, date
     output   : N/A
     """
-    def update(self,od,day)   :
+    def update(self,od,date)   :
         self.od.append(od)
-        self.day.append(day)
+        self.date.append(date)
     """
     function : Giving arrays of volume and ods for the children, calculate how much media volumn to be added
               and how much volumn after in each dilution
     input    : ods(array of float), volumes(array of float, these volumes have to add up to the self.volume)
     output   : names
     """
-    def setChildren(self,ods, volumes,dayObserve):     
+    def setChildren(self,ods, volumes,dateObserve):     
         numberChildren = len(ods)
         names          = []
         for i in range(numberChildren):
@@ -47,7 +47,7 @@ class Cell(object):
             od    = float(ods[i])
             newV  = round(self.od[-1]*v/od,2)
             # create new Cell object
-            child     = Cell(name=name,od=od,volume=newV,day=dayObserve,parent=self)
+            child     = Cell(name=name,od=od,volume=newV,date=dateObserve,parent=self)
             child.add = newV-v
             self.children.append(child)
             names.append(name)
@@ -63,7 +63,7 @@ class Cell(object):
             if node:
                 d["name"]     = node.name
                 d["od"]       = node.od
-                d["day"]      = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.day]
+                d["date"]      = ["{}-{}-{}".format(k.year,k.month,k.day) for k in node.date]
                 d["volume"]   = node.volume
                 d["add"]      = node.add
                 d["media"]    = node.media

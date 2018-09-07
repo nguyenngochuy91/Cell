@@ -1,118 +1,118 @@
 {
-    "name": "Nhi",
+    "name": "Nhi", 
     "od": [
-        0.3,
+        0.3, 
         0.7
-    ],
-    "day": [
-        "2018-9-1",
+    ], 
+    "date": [
+        "2018-9-1", 
         "2018-9-3"
-    ],
-    "volume": 10.0,
-    "add": 0,
-    "media": "Butyrate",
-    "parent": null,
+    ], 
+    "volume": 10.0, 
+    "add": 0, 
+    "media": "Butyrate", 
+    "parent": null, 
     "children": [
         {
-            "name": "Nhi_0",
+            "name": "Nhi_0", 
             "od": [
-                0.3,
+                0.3, 
                 0.8
-            ],
-            "day": [
-                "2018-9-3",
+            ], 
+            "date": [
+                "2018-9-3", 
                 "2018-9-5"
-            ],
-            "volume": 11.67,
-            "add": 6.67,
-            "media": "",
-            "parent": "Nhi",
+            ], 
+            "volume": 11.67, 
+            "add": 6.67, 
+            "media": "", 
+            "parent": "Nhi", 
             "children": [
                 {
-                    "name": "Nhi_0_0",
+                    "name": "Nhi_0_0", 
                     "od": [
                         0.3
-                    ],
-                    "day": [
+                    ], 
+                    "date": [
                         "2018-9-5"
-                    ],
-                    "volume": 13.33,
-                    "add": 8.33,
-                    "media": "",
-                    "parent": "Nhi_0",
+                    ], 
+                    "volume": 13.33, 
+                    "add": 8.33, 
+                    "media": "", 
+                    "parent": "Nhi_0", 
                     "children": []
-                },
+                }, 
                 {
-                    "name": "Nhi_0_1",
+                    "name": "Nhi_0_1", 
                     "od": [
                         0.4
-                    ],
-                    "day": [
+                    ], 
+                    "date": [
                         "2018-9-5"
-                    ],
-                    "volume": 10.0,
-                    "add": 5.0,
-                    "media": "",
-                    "parent": "Nhi_0",
+                    ], 
+                    "volume": 10.0, 
+                    "add": 5.0, 
+                    "media": "", 
+                    "parent": "Nhi_0", 
                     "children": []
                 }
             ]
-        },
+        }, 
         {
-            "name": "Nhi_1",
+            "name": "Nhi_1", 
             "od": [
                 0.15
-            ],
-            "day": [
+            ], 
+            "date": [
                 "2018-9-3"
-            ],
-            "volume": 11.67,
-            "add": 9.17,
-            "media": "",
-            "parent": "Nhi",
+            ], 
+            "volume": 11.67, 
+            "add": 9.17, 
+            "media": "", 
+            "parent": "Nhi", 
             "children": []
-        },
+        }, 
         {
-            "name": "Nhi_2",
+            "name": "Nhi_2", 
             "od": [
-                0.25,
+                0.25, 
                 0.6
-            ],
-            "day": [
-                "2018-9-3",
+            ], 
+            "date": [
+                "2018-9-3", 
                 "2018-9-6"
-            ],
-            "volume": 7.0,
-            "add": 4.5,
-            "media": "",
-            "parent": "Nhi",
+            ], 
+            "volume": 7.0, 
+            "add": 4.5, 
+            "media": "", 
+            "parent": "Nhi", 
             "children": [
                 {
-                    "name": "Nhi_2_0",
+                    "name": "Nhi_2_0", 
                     "od": [
                         0.4
-                    ],
-                    "day": [
+                    ], 
+                    "date": [
                         "2018-9-6"
-                    ],
-                    "volume": 4.5,
-                    "add": 1.5,
-                    "media": "",
-                    "parent": "Nhi_2",
+                    ], 
+                    "volume": 4.5, 
+                    "add": 1.5, 
+                    "media": "", 
+                    "parent": "Nhi_2", 
                     "children": []
-                },
+                }, 
                 {
-                    "name": "Nhi_2_1",
+                    "name": "Nhi_2_1", 
                     "od": [
                         0.3
-                    ],
-                    "day": [
+                    ], 
+                    "date": [
                         "2018-9-6"
-                    ],
-                    "volume": 4.0,
-                    "add": 2.0,
-                    "media": "",
-                    "parent": "Nhi_2",
+                    ], 
+                    "volume": 4.0, 
+                    "add": 2.0, 
+                    "media": "", 
+                    "parent": "Nhi_2", 
                     "children": []
                 }
             ]

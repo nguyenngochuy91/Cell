@@ -19,14 +19,14 @@ The users can either download the source codes of the requirements or use packag
 both pydot and graphviz. 
 
 ## Usage
-The easiest way to run the project is to execute the script [cellTracking](https://github.com/nguyenngochuy91/Cell/blob/master/cellTracking.py)
+The easiest way to run the project is to execute the script [gui.py](https://github.com/nguyenngochuy91/Cell/blob/master/gui.py.py)
 One can either run it by typing the following in command line:
 ```bash
-./cellTracking.py
+./gui.py
 ```
 or :
 ```bash
-python cellTracking.py
+python gui.py
 ```
 
 After that, just follow the instructions printing on the screen. The program will output a text file and a png file.
