@@ -147,7 +147,7 @@ def checkInput(controller,entries,checkName,checkDate):
             dictionary['media']= media
         elif field =='Number of children':
             numChildren = validateInput(text,field, lambda myType: True if myType.isdigit() else False, 
-                       lambda myVal: True if int(myVal)>0 and int(myVal)<10 else False)
+                       lambda myVal: True if int(myVal)>0 and int(myVal)<=10 else False)
             if numChildren:
                 dictionary['numChildren']= int(numChildren)
             else:
