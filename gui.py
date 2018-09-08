@@ -95,10 +95,10 @@ def validateInput(message,field,typeChecking,valueChecking):
 """
 function : function takes in user input, check it with errorChecking function, and 
            keep promting if input is not good. 
-input    : controller,entries,checkName,checkDate
+input    : controller,entries,checkName,checkDate,checkOd
 output   : dictionary
 """
-def checkInput(controller,entries,checkName,checkDate):
+def checkInput(controller,entries,checkName,checkDate,checkOd):
     dictionary = {}
     for entry in entries:
         field = entry[0]
@@ -107,7 +107,12 @@ def checkInput(controller,entries,checkName,checkDate):
             od  = validateInput(text,field, lambda myType: True if isFloat(myType) else False, 
                        lambda myVal: True if float(myVal)>0 and float(myVal)<1 else False)
             if od:
-                dictionary['od']= float(od)
+                od = validateInput(text,field, lambda myType: True , 
+                       lambda myVal: True if checkOd(od) else False)
+                if od:
+                    dictionary['od']= float(od)
+                else:
+                    return False
             else:
                 return False
         elif field == "Volume (ml)":
@@ -161,7 +166,7 @@ input    : controller,entries
 output   : N/A
 """
 def validateRoot(controller,entries):
-    dictionary = checkInput(controller,entries,lambda x: True,lambda x: True)
+    dictionary = checkInput(controller,entries,lambda x: True,lambda x: True,lambda x: True)
     if dictionary:
         name,od,volume,media,date = dictionary['name'],dictionary['od'],dictionary['volume'],dictionary['media'],dictionary['date']
         
@@ -183,7 +188,7 @@ input    : controller,entries,leafNames
 output   : N/A
 """
 def validateUpdatePhase1(controller,entries,leafNames):
-    dictionary = checkInput(controller,entries,lambda x: True if x in leafNames else False,lambda x: True)
+    dictionary = checkInput(controller,entries,lambda x: True if x in leafNames else False,lambda x: True,lambda x: True)
     if dictionary:
         name= dictionary['name']
         # success, then make a root, set the root to the controller, and move to next phase
@@ -209,7 +214,7 @@ def validateUpdatePhase2(controller,entries):
     currentNode = controller.getCurrentNode()
     name        = currentNode.name
     currentDate = currentNode.date[-1]
-    dictionary = checkInput(controller,entries,lambda x: True,lambda x: True if x>= currentDate else False)
+    dictionary = checkInput(controller,entries,lambda x: True,lambda x: True if x>= currentDate else False,lambda x: True)
     if dictionary:
         od,volume,media,date = dictionary['od'],dictionary['volume'],dictionary['media'],dictionary['date']
         # success, then make a root, set the root to the controller, and move to next phase
@@ -227,7 +232,7 @@ input    : controller,entries,leafNames
 output   : N/A
 """
 def validateNodeDilutePhase1(controller,entries,leafNames):
-    dictionary = checkInput(controller,entries,lambda x: True if x in leafNames else False,lambda x: True )
+    dictionary = checkInput(controller,entries,lambda x: True if x in leafNames else False,lambda x: True,lambda x: True)
     if dictionary:
         name,numChildren = dictionary['name'],dictionary['numChildren']
         # success, then make get the current node to dilute, number of children, the date, then move on to phase 2
@@ -246,10 +251,10 @@ def validateNodeDilutePhase1(controller,entries,leafNames):
 """
 function : function validates the entries for diluting purpose. It has 2 phase, 
             Phase 2 asks for the od and volume of those cultures
-input    : controller,entries
+input    : controller,entries,current od
 output   : N/A
 """
-def validateNodeDilutePhase2(controller,entries):
+def validateNodeDilutePhase2(controller,entries,od):
     # the the number of children so we know how many loop we are going through
     numChildren = controller.getNumberChildren()
     # get the current to add
@@ -264,7 +269,7 @@ def validateNodeDilutePhase2(controller,entries):
     volumes     = []
     names       = []
     dateEntry   = [entries[0]]
-    dictionary  = checkInput(controller,dateEntry,lambda x: True,lambda x: True if x>= currentDate else False)
+    dictionary  = checkInput(controller,dateEntry,lambda x: True,lambda x: True if x>= currentDate else False,lambda x: True)
 
     if dictionary:
         date = dictionary['date']
@@ -274,7 +279,8 @@ def validateNodeDilutePhase2(controller,entries):
     for i in range(numChildren):
         childName  = name+"_"+str(i)
         names.append(childName)
-        dictionary = checkInput(controller,entries[i*size+1:i*size+size+1],lambda x: True ,lambda x: True )
+        dictionary = checkInput(controller,entries[i*size+1:i*size+size+1],lambda x: True ,lambda x: True,
+                                lambda x: True if float(x)<=od else False )
         if not dictionary:
             check   = False
             ods     = []
@@ -446,7 +452,10 @@ output   : N/A
 def openFile(controller,master):
     infile = fileDialog.askopenfile(parent=master,mode='rb',title='Open File')
     if infile:
-        root   = readIn(infile)
+        try:
+            root   = readIn(infile)
+        except:
+            return 
         # set controller root as root
         controller.setRoot(root)
     
@@ -563,7 +572,10 @@ class Main(tk.Tk):
         self.openImage()
     # generating the image
     def openImage(self):
-        img = mpimg.imread("NH.jpg")
+        try:
+            img = mpimg.imread("NH.jpg")
+        except:
+            img = mpimg.imread("NH.png")
         self.ax1.imshow(img)
         self.canvas1.draw()
     def createCanvas(self):
@@ -783,7 +795,9 @@ class DilutePage1(tk.Frame):
         # go back to Third Page
         button2 = ttk.Button(self, text='Back',
                         command=lambda: self.controller.showFrame(PageThree))
-        button2.pack(side=tk.LEFT, padx=5, pady=5)   
+        button2.pack(side=tk.LEFT, padx=5, pady=5)  
+
+
         
  # Dilute Page, phase 2  , only invoke or show after page1 is through
 class DilutePage2(tk.Frame):
@@ -793,8 +807,9 @@ class DilutePage2(tk.Frame):
         self.controller = controller
         self.bind("<<ShowFrame>>", self.onShowFrame)
     def onShowFrame(self, event):
+        scrollable_body = Scrollable(self, width=10)
         # destroy all widget
-        for widget in self.winfo_children():
+        for widget in scrollable_body.winfo_children():
             widget.destroy()
         
         # get the number and name
@@ -807,33 +822,34 @@ class DilutePage2(tk.Frame):
         volume      = currentNode.volume
         date        = currentNode.date[-1] 
         # labeling our frame
-        label = tk.Label(self, text="Please type in the following information for the children cultures",
+        label = tk.Label(scrollable_body, text="Please type in the following information for the children cultures",
                          font=MIDDLE_FONT)
         label.pack(pady=10,padx=10)   
         
-        label = tk.Label(self, text="We are diluting culture {}, current od {}, current volume {}ml, and last updated on {} ".format(name,od,volume,date),
+        label = tk.Label(scrollable_body, text="We are diluting culture {}, current od {}, current volume {}ml, and last updated on {} ".format(name,od,volume,date),
                          font=SMALL_FONT)
         label.pack(pady=10,padx=10) 
         # get the date
-        dateEntry  = makeForm(self,["Date (yyyy-mm-dd)"])[0]
+        dateEntry  = makeForm(scrollable_body,["Date (yyyy-mm-dd)"])[0]
         # create entries for this update
         entries = [dateEntry]
         for i in range(numChildren):
             childName = name+"_"+str(i)
-            label = tk.Label(self, text=childName,
+            label = tk.Label(scrollable_body, text=childName,
                          font=SMALL_FONT)
             label.pack(pady=10,padx=10)   
-            ents = makeForm(self, diluteFields2)
+            ents = makeForm(scrollable_body, diluteFields2)
             entries.extend(ents)
         # enter means storing info, validate the values, only validate after user
         # press OK button
-        button1 = ttk.Button(self, text='OK',
-                        command=(lambda e=ents: validateNodeDilutePhase2(self.controller,entries)))
+        button1 = ttk.Button(scrollable_body, text='OK',
+                        command=(lambda e=ents: validateNodeDilutePhase2(self.controller,entries,od)))
         button1.pack(side=tk.LEFT, padx=5, pady=5)
         # go back to dilutepage1 Page
-        button2 = ttk.Button(self, text='Back',
+        button2 = ttk.Button(scrollable_body, text='Back',
                         command=lambda: self.controller.showFrame(DilutePage1))
         button2.pack(side=tk.LEFT, padx=5, pady=5)
+        scrollable_body.update()
 #         
 class DonePage(tk.Frame):
 
@@ -853,28 +869,44 @@ class DonePage(tk.Frame):
         button4 = ttk.Button(self, text="Visualize",
                             command=lambda: saveVisualizationFile(controller,self))
         button4.pack()
-# ************************
-# Scrollable Frame Class
-# ************************
-class ScrollFrame(tk.Frame):
-    def __init__(self, parent):
-        super().__init__(parent) # create a frame (self)
+        
+class Scrollable(tk.Frame):
+    """
+       Make a frame scrollable with scrollbar on the right.
+       After adding or removing widgets to the scrollable frame, 
+       call the update() method to refresh the scrollable area.
+    """
 
-        self.canvas = tk.Canvas(self, borderwidth=0, background="#ffffff")          #place canvas on self
-        self.viewPort = tk.Frame(self.canvas, background="#ffffff")                    #place a frame on the canvas, this frame will hold the child widgets 
-        self.vsb = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview) #place a scrollbar on self 
-        self.canvas.configure(yscrollcommand=self.vsb.set)                          #attach scrollbar action to scroll of canvas
+    def __init__(self, frame, width=16):
 
-        self.vsb.pack(side="right", fill="y")                                       #pack scrollbar to right of self
-        self.canvas.pack(side="left", fill="both", expand=True)                     #pack canvas to left of self and expand to fil
-        self.canvas.create_window((4,4), window=self.viewPort, anchor="nw",            #add view port frame to canvas
-                                  tags="self.viewPort")
+        scrollbar = tk.Scrollbar(frame, width=width)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y, expand=False)
 
-        self.viewPort.bind("<Configure>", self.onFrameConfigure)                       #bind an event whenever the size of the viewPort frame changes.
+        self.canvas = tk.Canvas(frame, yscrollcommand=scrollbar.set)
+        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    def onFrameConfigure(self, event):                                              
-        '''Reset the scroll region to encompass the inner frame'''
-        self.canvas.configure(scrollregion=self.canvas.bbox("all"))  
+        scrollbar.config(command=self.canvas.yview)
+
+        self.canvas.bind('<Configure>', self.__fill_canvas)
+
+        # base class initialization
+        tk.Frame.__init__(self, frame)         
+
+        # assign this obj (the inner frame) to the windows item of the canvas
+        self.windows_item = self.canvas.create_window(0,0, window=self, anchor=tk.NW)
+
+
+    def __fill_canvas(self, event):
+        "Enlarge the windows item to the canvas width"
+
+        canvas_width = event.width
+        self.canvas.itemconfig(self.windows_item, width = canvas_width)        
+
+    def update(self):
+        "Update the canvas and the scrollregion"
+
+        self.update_idletasks()
+        self.canvas.config(scrollregion=self.canvas.bbox(self.windows_item))
 ###############################################################################
 ## running the program
 ###############################################################################

@@ -6,6 +6,7 @@ the culture density and ensure the culture stay in exponential growth phase.
 
 ## Requirements
 * [Python](https://www.python.org/)
+* [matplotlib](https://matplotlib.org/)
 * [networkx](https://networkx.github.io/)
 * [pydot](https://github.com/erocarrera/pydot) 
 * [graphviz](https://www.graphviz.org/)
@@ -17,6 +18,7 @@ git clone https://github.com/nguyenngochuy91/Cell.git
 The users can either download the source codes of the requirements or use package management systems such as [brew](https://brew.sh/),
  or [conda](https://conda.io/miniconda.html). Users can also try [pip](https://pypi.org/project/pip/), but it has some problems for downloading 
 both pydot and graphviz. 
+
 
 ## Usage
 The easiest way to run the project is to execute the script [gui.py](https://github.com/nguyenngochuy91/Cell/blob/master/gui.py.py)
