@@ -324,6 +324,7 @@ def makeForm(master, fields):
       lab.pack(side=tk.LEFT)
       ent.pack(side=tk.RIGHT, expand=tk.YES, fill=tk.X)
       entries.append((field, ent))
+
    return entries
 
 ###############################################################################
@@ -560,17 +561,20 @@ class Main(tk.Tk):
         self.showFrame(StartPage)
         self.createCanvas()
         self.openImage()
+    # generating the image
     def openImage(self):
         img = mpimg.imread("NH.jpg")
         self.ax1.imshow(img)
         self.canvas1.draw()
     def createCanvas(self):
         """ Add a canvas to plot images """        
-        self.fig1 = Figure(frameon=False, figsize=(2, 2))
+        self.fig1 = Figure(frameon=False, figsize=(3, 3))
         self.canvas1 = FigureCanvasTkAgg(self.fig1, master=self.frames[StartPage])
         self.canvas1.get_tk_widget().pack(fill=tk.X, expand=1)
         self.ax1 = self.fig1.add_axes([0, 0, 1, 1])
-        self.ax1.axis('off')        
+        self.ax1.axis('off')    
+    def getPage(self, pageClass):
+        return self.frames[pageClass]
     # bring the current frame up
     def showFrame(self, cont):
         frame = self.frames[cont]
@@ -687,9 +691,9 @@ class UpdatePage1(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.controller = controller
-        self.bind("<<ShowFrame>>", self.on_show_frame)
+        self.bind("<<ShowFrame>>", self.onShowFrame)
     # showing event
-    def on_show_frame(self, event):
+    def onShowFrame(self, event):
         # destroy all widget
         for widget in self.winfo_children():
             widget.destroy()
@@ -718,9 +722,9 @@ class UpdatePage2(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.controller = controller
-        self.bind("<<ShowFrame>>", self.on_show_frame)
+        self.bind("<<ShowFrame>>", self.onShowFrame)
     # showing event
-    def on_show_frame(self, event):
+    def onShowFrame(self, event):
         # destroy all widget
         for widget in self.winfo_children():
             widget.destroy()
@@ -731,7 +735,6 @@ class UpdatePage2(tk.Frame):
         od          = currentNode.od[-1]
         volume      = currentNode.volume
         date        = currentNode.date[-1] 
-        print (currentNode.date)
         label = tk.Label(self, text="Please type in the following information for the current culture {}".format(name),
                          font=MIDDLE_FONT)
         label.pack(pady=10,padx=10)   
@@ -757,9 +760,9 @@ class DilutePage1(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.controller = controller
-        self.bind("<<ShowFrame>>", self.on_show_frame)
+        self.bind("<<ShowFrame>>", self.onShowFrame)
     # showing event
-    def on_show_frame(self, event):
+    def onShowFrame(self, event):
         # destroy all widget
         for widget in self.winfo_children():
             widget.destroy()
@@ -788,11 +791,12 @@ class DilutePage2(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         self.controller = controller
-        self.bind("<<ShowFrame>>", self.on_show_frame)
-    def on_show_frame(self, event):
+        self.bind("<<ShowFrame>>", self.onShowFrame)
+    def onShowFrame(self, event):
         # destroy all widget
         for widget in self.winfo_children():
             widget.destroy()
+        
         # get the number and name
         # the the number of children so we know how many loop we are going through
         numChildren = self.controller.getNumberChildren()
@@ -849,6 +853,28 @@ class DonePage(tk.Frame):
         button4 = ttk.Button(self, text="Visualize",
                             command=lambda: saveVisualizationFile(controller,self))
         button4.pack()
+# ************************
+# Scrollable Frame Class
+# ************************
+class ScrollFrame(tk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent) # create a frame (self)
+
+        self.canvas = tk.Canvas(self, borderwidth=0, background="#ffffff")          #place canvas on self
+        self.viewPort = tk.Frame(self.canvas, background="#ffffff")                    #place a frame on the canvas, this frame will hold the child widgets 
+        self.vsb = tk.Scrollbar(self, orient="vertical", command=self.canvas.yview) #place a scrollbar on self 
+        self.canvas.configure(yscrollcommand=self.vsb.set)                          #attach scrollbar action to scroll of canvas
+
+        self.vsb.pack(side="right", fill="y")                                       #pack scrollbar to right of self
+        self.canvas.pack(side="left", fill="both", expand=True)                     #pack canvas to left of self and expand to fil
+        self.canvas.create_window((4,4), window=self.viewPort, anchor="nw",            #add view port frame to canvas
+                                  tags="self.viewPort")
+
+        self.viewPort.bind("<Configure>", self.onFrameConfigure)                       #bind an event whenever the size of the viewPort frame changes.
+
+    def onFrameConfigure(self, event):                                              
+        '''Reset the scroll region to encompass the inner frame'''
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))  
 ###############################################################################
 ## running the program
 ###############################################################################
