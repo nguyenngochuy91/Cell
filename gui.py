@@ -713,7 +713,7 @@ class UpdatePage1(tk.Frame):
         label = tk.Label(self, text="Please type in the culture you want to update from the following list",
                          font=MIDDLE_FONT)        
         label.pack(pady=10,padx=10)
-        label = tk.Label(self, text=",".join(leafNames),
+        label = tk.Label(self, text=", ".join(leafNames),
                          font=SMALL_FONT)        
         label.pack(pady=10,padx=10)
         # create entries for this update
@@ -782,7 +782,7 @@ class DilutePage1(tk.Frame):
         label = tk.Label(self, text="Please type in the culture you want to dilute from the following list",
                          font=MIDDLE_FONT)        
         label.pack(pady=10,padx=10)
-        label = tk.Label(self, text=",".join(leafNames),
+        label = tk.Label(self, text=", ".join(leafNames),
                          font=SMALL_FONT)        
         label.pack(pady=10,padx=10)      
         # create entries for this update
@@ -807,10 +807,10 @@ class DilutePage2(tk.Frame):
         self.controller = controller
         self.bind("<<ShowFrame>>", self.onShowFrame)
     def onShowFrame(self, event):
+        for widget in self.winfo_children():
+            widget.destroy()
         scrollable_body = Scrollable(self, width=10)
         # destroy all widget
-        for widget in scrollable_body.winfo_children():
-            widget.destroy()
         
         # get the number and name
         # the the number of children so we know how many loop we are going through

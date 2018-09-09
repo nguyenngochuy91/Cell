@@ -1,0 +1,128 @@
+{
+    "name": "NcB11",
+    "od": [
+        0.78
+    ],
+    "date": [
+        "2018-9-6"
+    ],
+    "volume": 10.0,
+    "add": 0,
+    "media": "Butyrate",
+    "parent": null,
+    "children": [
+        {
+            "name": "NcB11_0",
+            "od": [
+                0.39
+            ],
+            "date": [
+                "2018-9-6"
+            ],
+            "volume": 10.0,
+            "add": 5.0,
+            "media": "",
+            "parent": "NcB11",
+            "children": [
+                {
+                    "name": "NcB11_0_0",
+                    "od": [
+                        0.04
+                    ],
+                    "date": [
+                        "2018-9-7"
+                    ],
+                    "volume": 9.75,
+                    "add": 8.75,
+                    "media": "",
+                    "parent": "NcB11_0",
+                    "children": []
+                },
+                {
+                    "name": "NcB11_0_1",
+                    "od": [
+                        0.04
+                    ],
+                    "date": [
+                        "2018-9-7"
+                    ],
+                    "volume": 9.75,
+                    "add": 8.75,
+                    "media": "",
+                    "parent": "NcB11_0",
+                    "children": []
+                },
+                {
+                    "name": "NcB11_0_2",
+                    "od": [
+                        0.04
+                    ],
+                    "date": [
+                        "2018-9-7"
+                    ],
+                    "volume": 9.75,
+                    "add": 8.75,
+                    "media": "",
+                    "parent": "NcB11_0",
+                    "children": []
+                },
+                {
+                    "name": "NcB11_0_3",
+                    "od": [
+                        0.04
+                    ],
+                    "date": [
+                        "2018-9-7"
+                    ],
+                    "volume": 9.75,
+                    "add": 8.75,
+                    "media": "",
+                    "parent": "NcB11_0",
+                    "children": []
+                },
+                {
+                    "name": "NcB11_0_4",
+                    "od": [
+                        0.04
+                    ],
+                    "date": [
+                        "2018-9-7"
+                    ],
+                    "volume": 9.75,
+                    "add": 8.75,
+                    "media": "",
+                    "parent": "NcB11_0",
+                    "children": []
+                },
+                {
+                    "name": "NcB11_0_5",
+                    "od": [
+                        0.04
+                    ],
+                    "date": [
+                        "2018-9-7"
+                    ],
+                    "volume": 9.75,
+                    "add": 8.75,
+                    "media": "",
+                    "parent": "NcB11_0",
+                    "children": []
+                },
+                {
+                    "name": "NcB11_0_6",
+                    "od": [
+                        0.04
+                    ],
+                    "date": [
+                        "2018-9-7"
+                    ],
+                    "volume": 9.75,
+                    "add": 8.75,
+                    "media": "",
+                    "parent": "NcB11_0",
+                    "children": []
+                }
+            ]
+        }
+    ]
+}
