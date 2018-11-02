@@ -5,6 +5,7 @@
     End          : 09/06/2018
     Dependecies  : networkx, pydot, matplotlib
 '''
+from sys import platform
 try:
     import tkinter as tk
     from tkinter import ttk
@@ -535,6 +536,32 @@ def saveVisualizationFile(controller,master):
     if outfile and graph:
         graph.write_png(outfile.name)
     controller.showFrame(DonePage)
+    
+"""
+function : given the controller,  giving the name, then set the currentNode 
+            to the name, also go to the modify2
+input    : controller, name
+output   : N/A
+"""   
+def goToModify2(controller,name):
+    targetNode = controller.root.getNodeFromRoot(name)
+    controller.setCurrentNode(targetNode)
+    controller.showFrame(ModifyPage2)
+    
+
+"""
+function : given the controller, and the currentFrame, analyze the data, learn to remind
+input    : controller, master
+output   : N/A
+"""   
+def analyzeData(controller,master):
+    root = controller.getRoot()
+    graph = visualization(root)
+    outfile = fileDialog.asksaveasfile(parent=master,mode='w',title='Save File')
+    if outfile and graph:
+        graph.write_png(outfile.name)
+    controller.showFrame(DonePage)    
+    
 ###############################################################################
 ## classes for handling frames
 ###############################################################################
@@ -557,7 +584,8 @@ class Main(tk.Tk):
         self.leaves = []
         self.numberChildren = 0
         self.date = datetime.date.today()
-        self.pages = [StartPage, PageOne, PageTwo, PageThree, UpdatePage1,UpdatePage2, DilutePage1, DilutePage2,DonePage]
+        self.pages = [StartPage, PageOne, PageTwo, PageThree, UpdatePage1,UpdatePage2, DilutePage1, DilutePage2,DonePage,
+                      ModifyPage1,ModifyPage2]
         
         for F in self.pages:
 
@@ -713,7 +741,7 @@ class UpdatePage1(tk.Frame):
         label = tk.Label(self, text="Please type in the culture you want to update from the following list",
                          font=MIDDLE_FONT)        
         label.pack(pady=10,padx=10)
-        label = tk.Label(self, text=", ".join(leafNames),
+        label = tk.Label(self, text=",".join(leafNames),
                          font=SMALL_FONT)        
         label.pack(pady=10,padx=10)
         # create entries for this update
@@ -782,7 +810,7 @@ class DilutePage1(tk.Frame):
         label = tk.Label(self, text="Please type in the culture you want to dilute from the following list",
                          font=MIDDLE_FONT)        
         label.pack(pady=10,padx=10)
-        label = tk.Label(self, text=", ".join(leafNames),
+        label = tk.Label(self, text=",".join(leafNames),
                          font=SMALL_FONT)        
         label.pack(pady=10,padx=10)      
         # create entries for this update
@@ -807,10 +835,10 @@ class DilutePage2(tk.Frame):
         self.controller = controller
         self.bind("<<ShowFrame>>", self.onShowFrame)
     def onShowFrame(self, event):
-        for widget in self.winfo_children():
-            widget.destroy()
         scrollable_body = Scrollable(self, width=10)
         # destroy all widget
+        for widget in scrollable_body.winfo_children():
+            widget.destroy()
         
         # get the number and name
         # the the number of children so we know how many loop we are going through
@@ -821,7 +849,10 @@ class DilutePage2(tk.Frame):
         od          = currentNode.od[-1]
         volume      = currentNode.volume
         date        = currentNode.date[-1] 
-        # labeling our frame
+        # labeling our frame        scrollable_body = Scrollable(self, width=10)
+        # destroy all widget
+        for widget in scrollable_body.winfo_children():
+            widget.destroy()
         label = tk.Label(scrollable_body, text="Please type in the following information for the children cultures",
                          font=MIDDLE_FONT)
         label.pack(pady=10,padx=10)   
@@ -850,10 +881,12 @@ class DilutePage2(tk.Frame):
                         command=lambda: self.controller.showFrame(DilutePage1))
         button2.pack(side=tk.LEFT, padx=5, pady=5)
         scrollable_body.update()
-#         
+
+# page that is done to do more thing like quit, main menu, save, visualize, analyze or modify
 class DonePage(tk.Frame):
 
     def __init__(self, parent, controller):
+        self.controller= controller
         tk.Frame.__init__(self,parent)
         label = tk.Label(self, text="We are done, what would you like to do?", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
@@ -870,6 +903,66 @@ class DonePage(tk.Frame):
                             command=lambda: saveVisualizationFile(controller,self))
         button4.pack()
         
+        button5 = ttk.Button(self, text="Modify",
+                            command=lambda: controller.showFrame(ModifyPage1))
+        button5.pack()
+        
+        button6 = ttk.Button(self, text="Analyze",
+                            command=lambda: analyzeData(controller,self))
+        button6.pack()      
+        
+# modification frame 1
+class ModifyPage1(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.controller = controller
+        self.bind("<<ShowFrame>>", self.onShowFrame)
+    def onShowFrame(self, event):
+        label = tk.Label(self, text="Modifying graph step 1", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
+        # gettign the root
+        root = self.controller.getRoot()
+        nodeNames = root.getNames()
+        for name in nodeNames:
+            # create a button
+            button1 = ttk.Button(self, text=name,
+                            command= goToModify2(self.controller,name))
+            button1.pack()
+
+        button3 = ttk.Button(self, text="Main Menu",
+                            command=lambda: self.controller.showFrame(StartPage))
+        button3.pack()
+        button4 = ttk.Button(self, text="Back",
+                            command=lambda: self.controller.showFrame(DonePage))
+        button4.pack()      
+# modification frame 2
+class ModifyPage2(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.controller = controller
+        self.bind("<<ShowFrame>>", self.onShowFrame)
+    def onShowFrame(self, event):
+        label = tk.Label(self, text="Modifying graph step 2", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
+        # getting the currentNode
+        currentNode = self.controller.getCurrentNode()
+        dates       = currentNode.date
+        ods         = currentNode.od
+        for i in range(len(dates)):
+            od = ods[i]
+            date = dates[i]
+            button1 = ttk.Button(self, text=name,
+                            command= goToModify2(self.controller,name))
+            button1.pack()            
+        button3 = ttk.Button(self, text="Main Menu",
+                            command=lambda: self.controller.showFrame(StartPage))
+        button3.pack()
+        button4 = ttk.Button(self, text="Back",
+                            command=lambda: self.controller.showFrame(ModifyPage1))
+        button4.pack() 
+        
+             
+# scroller class to imbed into my frame
 class Scrollable(tk.Frame):
     """
        Make a frame scrollable with scrollbar on the right.
@@ -907,6 +1000,7 @@ class Scrollable(tk.Frame):
 
         self.update_idletasks()
         self.canvas.config(scrollregion=self.canvas.bbox(self.windows_item))
+
 ###############################################################################
 ## running the program
 ###############################################################################
