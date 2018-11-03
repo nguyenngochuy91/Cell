@@ -5,7 +5,6 @@
     End          : 09/06/2018
     Dependecies  : networkx, pydot, matplotlib
 '''
-from sys import platform
 try:
     import tkinter as tk
     from tkinter import ttk
@@ -16,10 +15,11 @@ except:
     import ttk
     import tkMessageBox as messageBox
     import tkFileDialog as fileDialog
+
 from cell import Cell
 import datetime
 import json
-
+import os
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import matplotlib.image as mpimg
@@ -366,7 +366,7 @@ def specificDraw(G,media):
     newNode.obj_dict['name'] = media
     for n in nodes:
         attribute = G.node[n]
-        name = "name: {}\ndate: {}\nod: {}\nvolume: {}ml".format(attribute['label'],attribute['date'],attribute['od'],attribute['volume'])
+        name = "name: {}\ndate: {}\nod: {}\nvolume: {}ml".format(attribute['label'],attribute['date'],attribute['od'],attribute['volume'],attribute['media'])
         d[n] = name
         newNode = pydot.Node(name)
         newNode.obj_dict['name'] = name
@@ -405,13 +405,14 @@ def visualization(root):
             name    = node.name
             volume  = node.volume
             add     = node.add
-            DG.add_node("{}({})".format(name,dates[0]),label = name,volume = volume,add = add,od = ods[0],date =dates[0])
+            media   = node.media
+            DG.add_node("{}({})".format(name,dates[0]),label = name,volume = volume,add = add,od = ods[0],date =dates[0],media = media)
             for i in range(1,len(dates)):
                 add = 0
                 # add the updating node
                 currentName = "{}({})".format(name,dates[i])
                 parentName = "{}({})".format(name,dates[i-1])
-                DG.add_node(currentName,label = name,volume = volume,add = add,od = ods[i],date =dates[i])
+                DG.add_node(currentName,label = name,volume = volume,add = add,od = ods[i],date =dates[i],media = media)
                 DG.add_edge(parentName,currentName,volume= volume,add = add,type="update")
 
             
@@ -507,7 +508,16 @@ output   : N/A
 """   
 def saveTxtFile(controller,master):
     outfile = fileDialog.asksaveasfile(parent=master,mode='w',title='Save File')
-    dictionary = controller.getRoot().toDictionary()
+    root    = controller.getRoot()
+    graph = visualization(root)
+    # check if user want to save this
+    graph.write_png("temp")
+    # mac and linux
+    try:
+        os.system("open temp.png")
+    except:
+        os.system("start temp.png")
+    dictionary = root.toDictionary()
     # write out
     if outfile:
         writeOut(outfile,dictionary)
@@ -532,6 +542,14 @@ output   : N/A
 def saveVisualizationFile(controller,master):
     root = controller.getRoot()
     graph = visualization(root)
+    # check if user want to save this
+    graph.write_png("temp")
+    # mac and linux
+    try:
+        os.system("open temp.png")
+    except:
+        os.system("start temp.png")
+    
     outfile = fileDialog.asksaveasfile(parent=master,mode='w',title='Save File')
     if outfile and graph:
         graph.write_png(outfile.name)
@@ -547,7 +565,44 @@ def goToModify2(controller,name):
     targetNode = controller.root.getNodeFromRoot(name)
     controller.setCurrentNode(targetNode)
     controller.showFrame(ModifyPage2)
+ 
+"""
+function : given the controller,  giving index i, set up the index in the controller, show modify3 frame
+input    : controller, i
+output   : N/A
+"""   
+def goToModify3(controller,i):
+    controller.setIndex(i)
+    controller.showFrame(ModifyPage3) 
     
+"""
+function : function validates the entries for updating purpose. If the input is
+           good and user accepts it, it modifies the info
+input    : controller,entries
+output   : N/A
+"""
+def modify(controller,entries):
+    currentNode = controller.getCurrentNode()
+    name        = currentNode.name
+    index       = controller.getIndex()
+    dictionary = checkInput(controller,entries,lambda x: True,lambda x: True ,lambda x: True)
+    if dictionary:
+        od,volume,media,date = dictionary['od'],dictionary['volume'],dictionary['media'],dictionary['date']
+        # success, then make a root, set the root to the controller, and move to next phase
+        if messageBox.askyesno("Modifying!!!","Are you sure to modify the node that has name as  {}, od as {}, volume as {}mL, media as {}, and date as {}? "
+                             .format(name,od,volume,media,date)):     
+            # update the node
+            # if nothing in od,volum,media, then delete this index
+            if not od or not volume or not media or not date:
+                currentNode.date.pop(index)
+                currentNode.od.pop(index)
+            else:
+                currentNode.date[index] = date
+                currentNode.od[index]   = od
+                currentNode.volume      = volume
+                currentNode.media           = media
+            # go back to PageThree
+            controller.showFrame(DonePage)
 
 """
 function : given the controller, and the currentFrame, analyze the data, learn to remind
@@ -585,8 +640,8 @@ class Main(tk.Tk):
         self.numberChildren = 0
         self.date = datetime.date.today()
         self.pages = [StartPage, PageOne, PageTwo, PageThree, UpdatePage1,UpdatePage2, DilutePage1, DilutePage2,DonePage,
-                      ModifyPage1,ModifyPage2]
-        
+                      ModifyPage1,ModifyPage2,ModifyPage3]
+        self.index = None
         for F in self.pages:
 
             frame = F(self.container, self)
@@ -644,6 +699,11 @@ class Main(tk.Tk):
         self.date = date
     def getDate(self):
         return self.date
+    # get the index and set the index
+    def setIndex(self,index):
+        self.index = index
+    def getIndex(self):
+        return self.index
 # Start Page, to create a new experiment from cratch of to continue from old one       
 class StartPage(tk.Frame):
 
@@ -835,11 +895,10 @@ class DilutePage2(tk.Frame):
         self.controller = controller
         self.bind("<<ShowFrame>>", self.onShowFrame)
     def onShowFrame(self, event):
-        scrollable_body = Scrollable(self, width=10)
         # destroy all widget
-        for widget in scrollable_body.winfo_children():
+        for widget in self.winfo_children():
             widget.destroy()
-        
+        scrollable_body = Scrollable(self, width=10)
         # get the number and name
         # the the number of children so we know how many loop we are going through
         numChildren = self.controller.getNumberChildren()
@@ -849,10 +908,7 @@ class DilutePage2(tk.Frame):
         od          = currentNode.od[-1]
         volume      = currentNode.volume
         date        = currentNode.date[-1] 
-        # labeling our frame        scrollable_body = Scrollable(self, width=10)
-        # destroy all widget
-        for widget in scrollable_body.winfo_children():
-            widget.destroy()
+
         label = tk.Label(scrollable_body, text="Please type in the following information for the children cultures",
                          font=MIDDLE_FONT)
         label.pack(pady=10,padx=10)   
@@ -917,22 +973,27 @@ class ModifyPage1(tk.Frame):
         tk.Frame.__init__(self,parent)
         self.controller = controller
         self.bind("<<ShowFrame>>", self.onShowFrame)
-    def onShowFrame(self, event):
-        label = tk.Label(self, text="Modifying graph step 1", font=LARGE_FONT)
+    def onShowFrame(self, event):   
+        # destroy all widget
+        for widget in self.winfo_children():
+            widget.destroy()
+        scrollable_body = Scrollable(self, width=10)
+        label = tk.Label(scrollable_body, text="Modifying graph step 1", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
         # gettign the root
         root = self.controller.getRoot()
         nodeNames = root.getNames()
+        buttons =[]
         for name in nodeNames:
             # create a button
-            button1 = ttk.Button(self, text=name,
-                            command= goToModify2(self.controller,name))
+            button1 = ttk.Button(scrollable_body, text=name,command = lambda name = name :goToModify2(self.controller,name))
             button1.pack()
+            buttons.append(button1)
 
-        button3 = ttk.Button(self, text="Main Menu",
+        button3 = ttk.Button(scrollable_body, text="Main Menu",
                             command=lambda: self.controller.showFrame(StartPage))
         button3.pack()
-        button4 = ttk.Button(self, text="Back",
+        button4 = ttk.Button(scrollable_body, text="Back",
                             command=lambda: self.controller.showFrame(DonePage))
         button4.pack()      
 # modification frame 2
@@ -942,26 +1003,64 @@ class ModifyPage2(tk.Frame):
         self.controller = controller
         self.bind("<<ShowFrame>>", self.onShowFrame)
     def onShowFrame(self, event):
-        label = tk.Label(self, text="Modifying graph step 2", font=LARGE_FONT)
+        for widget in self.winfo_children():
+            widget.destroy()
+        scrollable_body = Scrollable(self, width=10)
+        label = tk.Label(scrollable_body, text="Modifying graph step 2", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
         # getting the currentNode
         currentNode = self.controller.getCurrentNode()
+        name = currentNode.name
         dates       = currentNode.date
-        ods         = currentNode.od
         for i in range(len(dates)):
-            od = ods[i]
             date = dates[i]
-            button1 = ttk.Button(self, text=name,
-                            command= goToModify2(self.controller,name))
+            button1 = ttk.Button(self, text=name+"_"+str(date),command = lambda i = i :goToModify3(self.controller,i))
             button1.pack()            
-        button3 = ttk.Button(self, text="Main Menu",
+        button3 = ttk.Button(scrollable_body, text="Main Menu",
                             command=lambda: self.controller.showFrame(StartPage))
         button3.pack()
-        button4 = ttk.Button(self, text="Back",
+        button4 = ttk.Button(scrollable_body, text="Back",
                             command=lambda: self.controller.showFrame(ModifyPage1))
         button4.pack() 
+
+# modification frame3   
+class ModifyPage3(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.controller = controller
+        self.bind("<<ShowFrame>>", self.onShowFrame)
+    # showing event
+    def onShowFrame(self, event):
+        # destroy all widget
+        for widget in self.winfo_children():
+            widget.destroy()
+        # labeling our frame
+        # get the current to add
+        currentNode = self.controller.getCurrentNode()  
+        index       = self.controller.getIndex()
+        name        = currentNode.name
+        od          = currentNode.od[index]
+        volume      = currentNode.volume
+        date        = currentNode.date[index] 
+        label = tk.Label(self, text="Please type in the following information for the following culture {}".format(name),
+                         font=MIDDLE_FONT)
+        label.pack(pady=10,padx=10)   
         
-             
+        label = tk.Label(self, text="We are modifying culture {}, current od {}, current volume {}ml, and  updated on {} ".format(name,od,volume,date),
+                         font=SMALL_FONT)
+        label.pack(pady=10,padx=10) 
+        # create entries for this update
+        ents = makeForm(self, updateFields2)
+        # enter means storing info, validate the values, only validate after user
+        # press OK button
+        button1 = ttk.Button(self, text='OK',
+                        command=(lambda e=ents: modify(self.controller,ents)))
+        button1.pack(side=tk.LEFT, padx=5, pady=5)
+        # go back to Third Page
+        button2 = ttk.Button(self, text='Back',
+                        command=lambda: self.controller.showFrame(ModifyPage2))
+        button2.pack(side=tk.LEFT, padx=5, pady=5)             
 # scroller class to imbed into my frame
 class Scrollable(tk.Frame):
     """
