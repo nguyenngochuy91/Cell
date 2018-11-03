@@ -514,13 +514,14 @@ def saveTxtFile(controller,master):
     graph.write_png("temp")
     # mac and linux
     try:
-        os.system("open temp.png")
+        os.system("open temp")
     except:
-        os.system("start temp.png")
-    dictionary = root.toDictionary()
-    # write out
-    if outfile:
-        writeOut(outfile,dictionary)
+        os.system("start temp")
+    if messageBox.askyesno("Does this look good to you :)???"):   
+        dictionary = root.toDictionary()
+        # write out
+        if outfile:
+            writeOut(outfile,dictionary)
 
     # go to page Three
     controller.showFrame(DonePage)
@@ -546,13 +547,13 @@ def saveVisualizationFile(controller,master):
     graph.write_png("temp")
     # mac and linux
     try:
-        os.system("open temp.png")
+        os.system("open temp")
     except:
-        os.system("start temp.png")
-    
-    outfile = fileDialog.asksaveasfile(parent=master,mode='w',title='Save File')
-    if outfile and graph:
-        graph.write_png(outfile.name)
+        os.system("start temp")
+    if messageBox.askyesno("Does this look good to you :)???"):    
+        outfile = fileDialog.asksaveasfile(parent=master,mode='w',title='Save File')
+        if outfile and graph:
+            graph.write_png(outfile.name)
     controller.showFrame(DonePage)
     
 """
