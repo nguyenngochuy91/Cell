@@ -366,7 +366,7 @@ def specificDraw(G,media):
     newNode.obj_dict['name'] = media
     for n in nodes:
         attribute = G.node[n]
-        name = "name: {}\ndate: {}\nod: {}\nvolume: {}ml".format(attribute['label'],attribute['date'],attribute['od'],attribute['volume'],attribute['media'])
+        name = "name: {}\ndate: {}\nod: {}\nvolume: {}ml\nmedia: {}".format(attribute['label'],attribute['date'],attribute['od'],attribute['volume'],media)
         d[n] = name
         newNode = pydot.Node(name)
         newNode.obj_dict['name'] = name
@@ -507,7 +507,6 @@ input    : controller, master
 output   : N/A
 """   
 def saveTxtFile(controller,master):
-    outfile = fileDialog.asksaveasfile(parent=master,mode='w',title='Save File')
     root    = controller.getRoot()
     graph = visualization(root)
     # check if user want to save this
@@ -517,7 +516,8 @@ def saveTxtFile(controller,master):
         os.system("open temp")
     except:
         os.system("start temp")
-    if messageBox.askyesno("Does this look good to you :)???"):   
+    if messageBox.askyesno("Does this look good to you :)???"): 
+        outfile = fileDialog.asksaveasfile(parent=master,mode='w',title='Save File')
         dictionary = root.toDictionary()
         # write out
         if outfile:
@@ -601,7 +601,7 @@ def modify(controller,entries):
                 currentNode.date[index] = date
                 currentNode.od[index]   = od
                 currentNode.volume      = volume
-                currentNode.media           = media
+                currentNode.media       = media
             # go back to PageThree
             controller.showFrame(DonePage)
 
@@ -993,10 +993,10 @@ class ModifyPage1(tk.Frame):
 
         button3 = ttk.Button(scrollable_body, text="Main Menu",
                             command=lambda: self.controller.showFrame(StartPage))
-        button3.pack()
+        button3.pack(side = tk.BOTTOM)
         button4 = ttk.Button(scrollable_body, text="Back",
                             command=lambda: self.controller.showFrame(DonePage))
-        button4.pack()      
+        button4.pack(side = tk.LEFT)     
 # modification frame 2
 class ModifyPage2(tk.Frame):
     def __init__(self, parent, controller):
@@ -1015,14 +1015,14 @@ class ModifyPage2(tk.Frame):
         dates       = currentNode.date
         for i in range(len(dates)):
             date = dates[i]
-            button1 = ttk.Button(self, text=name+"_"+str(date),command = lambda i = i :goToModify3(self.controller,i))
+            button1 = ttk.Button(scrollable_body, text=name+" "+str(date),command = lambda i = i :goToModify3(self.controller,i))
             button1.pack()            
         button3 = ttk.Button(scrollable_body, text="Main Menu",
                             command=lambda: self.controller.showFrame(StartPage))
-        button3.pack()
+        button3.pack(side = tk.BOTTOM)
         button4 = ttk.Button(scrollable_body, text="Back",
                             command=lambda: self.controller.showFrame(ModifyPage1))
-        button4.pack() 
+        button4.pack(side = tk.LEFT)
 
 # modification frame3   
 class ModifyPage3(tk.Frame):
@@ -1057,7 +1057,7 @@ class ModifyPage3(tk.Frame):
         # press OK button
         button1 = ttk.Button(self, text='OK',
                         command=(lambda e=ents: modify(self.controller,ents)))
-        button1.pack(side=tk.LEFT, padx=5, pady=5)
+        button1.pack(side=tk.RIGHT, padx=5, pady=5,anchor=tk.E)
         # go back to Third Page
         button2 = ttk.Button(self, text='Back',
                         command=lambda: self.controller.showFrame(ModifyPage2))
