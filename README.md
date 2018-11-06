@@ -44,4 +44,4 @@ Here are the examples of a text file and the png file.
 ![data](https://github.com/nguyenngochuy91/Cell/blob/master/dictionary.png)
 ### data.png
 
-![data](https://github.com/nguyenngochuy91/Cell/blob/master/data.png)
+![data](https://github.com/nguyenngochuy91/Cell/blob/master/NcB11.png)
